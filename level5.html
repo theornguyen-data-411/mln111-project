@@ -451,6 +451,8 @@
             const elapsed = Math.max(0, Date.now() - start);
             const name = getPlayerName() || "Lữ Khách";
             submitLeaderboardEntry(name, elapsed);
+        } else {
+            showFlash("Không tìm thấy thời gian bắt đầu. Hãy chơi từ Màn 1.");
         }
         localStorage.removeItem(RUN_START_KEY);
         localStorage.setItem('mln11Progress', '5');
