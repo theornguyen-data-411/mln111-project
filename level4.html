@@ -353,7 +353,7 @@
 
     <!-- NPC G.W.F. Hegel -->
     <div id="hegel" class="entity" style="left: 600px; top: 200px;">
-        <div class="char-name-tag">G.W.F. Hegel</div>
+        <div class="char-name-tag">Hegel</div>
         <div class="char-container">
             <div class="hair-hegel"></div>
             <div class="char-head"></div>
@@ -384,7 +384,7 @@
     <button id="inv-button" type="button">Hành Trang [I]</button>
 
     <div id="dialog-box" class="ui-panel" style="top: auto; bottom: 20px; transform: translateX(-50%); width: 700px;">
-        <h3 id="dialog-name" class="font-bold text-yellow-500 mb-2 font-serif">G.W.F. Hegel</h3>
+        <h3 id="dialog-name" class="font-bold text-yellow-500 mb-2 font-serif">Hegel</h3>
         <p id="dialog-text" class="italic text-gray-300">...</p>
         <p class="text-xs text-gray-500 mt-4 text-right">[F] Tiếp tục</p>
     </div>
@@ -440,7 +440,7 @@
             cloakFoundTruth: false
         },
         objs: [
-            { id: 'hegel', x: 600, y: 200, name: 'G.W.F. Hegel' },
+            { id: 'hegel', x: 600, y: 200, name: 'Hegel' },
             { id: 'rack', x: 100, y: 200, name: 'Giá Áo' },
             { id: 'mirror', x: 150, y: 200, name: 'Gương Soi' },
             { id: 'clock-base', x: 700, y: 500, name: 'Cỗ Máy Thời Gian' },
@@ -658,7 +658,7 @@
         if (!target) return;
 
         if (target.id === 'hegel') {
-            showDialog("G.W.F. Hegel", hegelDialogues[dialogIdx]);
+            showDialog("Hegel", hegelDialogues[dialogIdx]);
             if (dialogIdx < hegelDialogues.length - 1) dialogIdx++;
         }
         else if (target.id === 'rack') {

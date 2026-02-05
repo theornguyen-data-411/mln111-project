@@ -698,6 +698,42 @@
 
         .inv-item-row { border-bottom: 1px solid rgba(255,255,255,0.08); }
         .inv-item-row.selected { background: rgba(214, 178, 94, 0.12); border-left: 4px solid #d6b25e; }
+
+        #end-screen {
+            background: rgba(4, 6, 12, 0.96);
+        }
+        #end-screen .end-panel {
+            width: min(760px, 90%);
+            padding: 40px 48px;
+            border-radius: 24px;
+            background: rgba(8, 10, 16, 0.92);
+            border: 1px solid rgba(214, 178, 94, 0.25);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.03);
+            text-align: center;
+        }
+        #end-screen #end-title {
+            font-size: clamp(28px, 4.5vw, 52px);
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            margin-bottom: 18px;
+            color: #f1d07a;
+            text-wrap: balance;
+            word-break: break-word;
+        }
+        #end-screen #end-msg {
+            font-size: clamp(14px, 2.2vw, 18px);
+            color: #9aa3b2;
+            font-style: italic;
+            line-height: 1.7;
+            margin-bottom: 28px;
+            overflow-wrap: anywhere;
+        }
+        #end-screen #end-hint {
+            font-size: 12px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: #6b7280;
+        }
     </style>
 </head>
 
@@ -825,10 +861,12 @@
 
             <!-- End Screen -->
             <div id="end-screen"
-                class="hidden absolute inset-0 bg-black flex flex-col items-center justify-center z-[9999]">
-                <h1 id="end-title" class="text-7xl font-serif font-bold text-emerald-400 mb-6 tracking-tighter">CHÂN LÝ ĐƯỢC KHAI PHÁ</h1>
-                <p id="end-msg" class="text-xl italic text-gray-400 mb-12 text-center max-w-lg leading-relaxed">"Bạn đã nhìn thấy ánh sáng bên ngoài cái hang của nhận thức. Sự thật không phải lúc nào cũng như vẻ bề ngoài."</p>
-                <div id="end-hint" class="text-gray-500 text-lg uppercase tracking-widest animate-pulse">Ấn phím [F] để qua màn tiếp theo</div>
+                class="hidden absolute inset-0 flex flex-col items-center justify-center z-[9999]">
+                <div class="end-panel">
+                    <h1 id="end-title">CHÂN LÝ ĐƯỢC KHAI PHÁ</h1>
+                    <p id="end-msg">"Bạn đã nhìn thấy ánh sáng bên ngoài cái hang của nhận thức. Sự thật không phải lúc nào cũng như vẻ bề ngoài."</p>
+                    <div id="end-hint" class="animate-pulse">Ấn phím [F] để qua màn tiếp theo</div>
+                </div>
             </div>
         </div>
     </div>

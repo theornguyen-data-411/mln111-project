@@ -57,6 +57,18 @@
             height: 100%;
         }
 
+        .menu-single {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            height: 100%;
+        }
+
+        .menu-card {
+            width: min(520px, 90%);
+        }
+
         .panel {
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
@@ -314,6 +326,70 @@
             display: flex;
             justify-content: flex-end;
         }
+
+        #leaderboard-modal .modal-card {
+            width: min(680px, 92%);
+        }
+
+        #leaderboard-modal .leaderboard-title {
+            font-family: 'Unbounded', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        #leaderboard-modal .leaderboard-subtitle {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        #philosopher-modal {
+            position: absolute;
+            top: 120px;
+            right: 40px;
+            width: 320px;
+            background: rgba(10, 12, 20, 0.96);
+            border: 1px solid rgba(214, 178, 94, 0.35);
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.03);
+            z-index: 3;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        #philosopher-modal.hidden {
+            display: none;
+        }
+        #philosopher-modal .philo-title {
+            font-family: 'Unbounded', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        #philosopher-modal img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+        #philosopher-modal .philo-name {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #e5e7eb;
+        }
+        #philosopher-modal .philo-level {
+            color: #9aa3b2;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-top: 4px;
+        }
     </style>
 </head>
 
@@ -332,14 +408,20 @@
                 </p>
                 <div class="legacy-actions">
                     <button id="journey-btn" class="legacy-btn primary" type="button">Bắt đầu hành trình</button>
+                    <button id="leaderboard-btn" class="legacy-btn secondary" type="button">Bảng xếp hạng</button>
                     <button id="guide-btn" class="legacy-btn secondary" type="button">Cách chơi</button>
                 </div>
                 <div class="legacy-levels">
-                    <button class="legacy-btn ghost" type="button">Màn 1</button>
-                    <button class="legacy-btn ghost" type="button">Màn 2</button>
-                    <button class="legacy-btn ghost" type="button">Màn 3</button>
-                    <button class="legacy-btn ghost" type="button">Màn 4</button>
-                    <button class="legacy-btn ghost" type="button">Màn 5</button>
+                    <button class="legacy-btn ghost level-btn" type="button"
+                        data-level="Màn 1" data-philosopher="René Descartes" data-image="level1.png">Màn 1</button>
+                    <button class="legacy-btn ghost level-btn" type="button"
+                        data-level="Màn 2" data-philosopher="Heraclitus" data-image="level2.png">Màn 2</button>
+                    <button class="legacy-btn ghost level-btn" type="button"
+                        data-level="Màn 3" data-philosopher="Plato" data-image="level3.png">Màn 3</button>
+                    <button class="legacy-btn ghost level-btn" type="button"
+                        data-level="Màn 4" data-philosopher="Hegel" data-image="level4.png">Màn 4</button>
+                    <button class="legacy-btn ghost level-btn" type="button"
+                        data-level="Màn 5" data-philosopher="Karl Marx" data-image="level5.png">Màn 5</button>
                 </div>
                 <div class="legacy-hint">
                     Nhấn <span class="highlight">ENTER</span> để bắt đầu
@@ -347,9 +429,9 @@
             </div>
         </div>
 
-        <div id="new-menu" class="menu-grid hidden">
-            <section class="panel">
-                <p class="title text-sm">Huyền Vực Tư Duy</p>
+        <div id="new-menu" class="menu-single hidden">
+            <section class="panel menu-card">
+                <p class="title text-sm">Mê Cung Triết Học</p>
                 <h1 class="text-3xl font-bold mt-3">Menu</h1>
                 <p class="text-gray-400 mt-2 italic">Nhập tên để bắt đầu hành trình.</p>
 
@@ -365,13 +447,6 @@
                 <div class="mt-6 text-xs text-gray-500">
                     Thời gian được tính từ lúc vào Màn 1 đến khi hoàn thành Màn 5.
                 </div>
-            </section>
-
-            <section class="panel">
-                <p class="title text-sm">Bảng xếp hạng</p>
-                <h2 class="text-2xl font-bold mt-3">Top Thời Gian</h2>
-                <div id="leaderboard-empty" class="text-gray-500 mt-6 italic">Chưa có dữ liệu.</div>
-                <div id="leaderboard-list" class="mt-4"></div>
             </section>
         </div>
 
@@ -389,6 +464,25 @@
                     <button id="guide-close" class="legacy-btn ghost" type="button">Đóng [ESC]</button>
                 </div>
             </div>
+        </div>
+
+        <div id="leaderboard-modal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <div class="leaderboard-title">Bảng xếp hạng</div>
+                <div class="leaderboard-subtitle">Những Người Chơi Khét Nhất Trong Mê Cung</div>
+                <div id="leaderboard-modal-empty" class="text-gray-500 mt-4 italic">Chưa có dữ liệu.</div>
+                <div id="leaderboard-modal-list" class="mt-4"></div>
+                <div class="modal-actions mt-6">
+                    <button id="leaderboard-close" class="legacy-btn ghost" type="button">Đóng [ESC]</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="philosopher-modal" class="hidden">
+            <div class="philo-title">Nhà Triết Học</div>
+            <img id="philo-image" alt="Philosopher portrait">
+            <div class="philo-name" id="philo-name">...</div>
+            <div class="philo-level" id="philo-level">...</div>
         </div>
     </div>
 
@@ -446,8 +540,8 @@
         }
 
         async function renderLeaderboard() {
-            const list = document.getElementById('leaderboard-list');
-            const empty = document.getElementById('leaderboard-empty');
+            const list = document.getElementById('leaderboard-modal-list');
+            const empty = document.getElementById('leaderboard-modal-empty');
             list.innerHTML = '';
             empty.textContent = 'Đang tải bảng xếp hạng...';
             empty.classList.remove('hidden');
@@ -516,6 +610,15 @@
         const guideModal = document.getElementById('guide-modal');
         const guideBtn = document.getElementById('guide-btn');
         const guideClose = document.getElementById('guide-close');
+        const leaderboardModal = document.getElementById('leaderboard-modal');
+        const leaderboardBtn = document.getElementById('leaderboard-btn');
+        const leaderboardClose = document.getElementById('leaderboard-close');
+        const philosopherModal = document.getElementById('philosopher-modal');
+        const philoImage = document.getElementById('philo-image');
+        const philoName = document.getElementById('philo-name');
+        const philoLevel = document.getElementById('philo-level');
+        const levelButtons = document.querySelectorAll('.level-btn');
+        let philoHideTimeout = null;
         function showNewMenu() {
             legacyMenu.classList.add('hidden');
             newMenu.classList.remove('hidden');
@@ -530,6 +633,30 @@
             if (legacyMenu.classList.contains('hidden')) return;
             if (e.key === 'Enter') showNewMenu();
         });
+        levelButtons.forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                if (philoHideTimeout) clearTimeout(philoHideTimeout);
+                const image = btn.getAttribute('data-image');
+                const name = btn.getAttribute('data-philosopher');
+                const level = btn.getAttribute('data-level');
+                philoImage.src = image;
+                philoImage.alt = name;
+                philoName.textContent = name;
+                philoLevel.textContent = level;
+                philosopherModal.classList.remove('hidden');
+            });
+            btn.addEventListener('mouseleave', () => {
+                philoHideTimeout = setTimeout(() => {
+                    philosopherModal.classList.add('hidden');
+                }, 200);
+            });
+        });
+        philosopherModal.addEventListener('mouseenter', () => {
+            if (philoHideTimeout) clearTimeout(philoHideTimeout);
+        });
+        philosopherModal.addEventListener('mouseleave', () => {
+            philosopherModal.classList.add('hidden');
+        });
         guideBtn.addEventListener('click', () => {
             guideModal.classList.remove('hidden');
         });
@@ -539,9 +666,23 @@
         guideModal.addEventListener('click', (e) => {
             if (e.target === guideModal) guideModal.classList.add('hidden');
         });
+        leaderboardBtn.addEventListener('click', () => {
+            leaderboardModal.classList.remove('hidden');
+            renderLeaderboard();
+        });
+        leaderboardClose.addEventListener('click', () => {
+            leaderboardModal.classList.add('hidden');
+        });
+        leaderboardModal.addEventListener('click', (e) => {
+            if (e.target === leaderboardModal) leaderboardModal.classList.add('hidden');
+        });
         window.addEventListener('keydown', (e) => {
             if (guideModal.classList.contains('hidden')) return;
             if (e.key === 'Escape') guideModal.classList.add('hidden');
+        });
+        window.addEventListener('keydown', (e) => {
+            if (leaderboardModal.classList.contains('hidden')) return;
+            if (e.key === 'Escape') leaderboardModal.classList.add('hidden');
         });
 
         const nameInput = document.getElementById('player-name');
@@ -551,7 +692,7 @@
             if (e.key === 'Enter') startGame();
         });
 
-        renderLeaderboard();
+        // leaderboard renders on demand
     </script>
 </body>
 
