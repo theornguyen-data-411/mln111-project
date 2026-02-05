@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hegel - Sự Thống Nhất Của Các Mặt Đối Lập</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #080a05;
+            font-family: 'Times New Roman', serif;
+            color: #d1d5db;
+        }
+
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            margin: 20px auto;
+            background: #111;
+            border: 8px solid #2c2c24;
+            overflow: hidden;
+            box-shadow: 0 0 100px rgba(0,0,0,0.9);
+        }
+
+        /* --- Bản đồ thế giới --- */
+        #world {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            z-index: 1;
+        }
+
+        .room { height: 100%; position: relative; }
+        #room-black { width: 250px; background: #000; border-right: 2px solid #222; }
+        #room-mid { width: 300px; background: #1a1a1a; position: relative; }
+        #room-white { width: 250px; background: #eee; border-left: 2px solid #ddd; }
+
+        /* Lớp phủ bóng tối */
+        #black-overlay {
+            position: absolute;
+            left: 0; top: 0; width: 250px; height: 100%;
+            background: rgba(0,0,0,0.98);
+            z-index: 80;
+            pointer-events: none;
+        }
+
+        #spotlight {
+            position: absolute;
+            width: 250px; height: 250px;
+            background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 86;
+            pointer-events: none;
+            display: none;
+            mix-blend-mode: screen;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Thực thể cơ bản */
+        .entity { 
+            position: absolute; 
+            z-index: 85; 
+            transform: translate(-50%, -50%); 
+        }
+
+        /* --- Model Nhân vật --- */
+        .char-container {
+            position: relative;
+            width: 40px;
+            height: 60px;
+        }
+
+        .char-name-tag {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 14px;
+            font-weight: bold;
+            color: #f39c12;
+            text-shadow: 1px 1px 2px black;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .char-head {
+            position: absolute; top: 2px; left: 11px; width: 18px; height: 18px;
+            background: #f39c12; border: 1.5px solid #fff; border-radius: 50%; z-index: 15;
+        }
+
+        .hair-hegel {
+            position: absolute; top: 0; left: 8px; width: 24px; height: 18px;
+background: #555; border-radius: 50% 50% 0 0; z-index: 14;
+        }
+        .char-body {
+            position: absolute; top: 18px; left: 8px; width: 24px; height: 26px;
+            background: #333; border: 2px solid #555; border-radius: 4px; z-index: 10;
+        }
+        .char-arm {
+            position: absolute; width: 6px; height: 16px; background: #333; border: 1px solid #555; border-radius: 3px; top: 2px;
+        }
+        .arm-left { left: -7px; transform-origin: top center; }
+        .arm-right { right: -7px; transform-origin: top center; }
+        .char-leg {
+            position: absolute; width: 8px; height: 14px; background: #222; border: 1px solid #444; border-radius: 3px; top: 42px;
+        }
+        .leg-left { left: 11px; transform-origin: top center; }
+        .leg-right { right: 11px; transform-origin: top center; }
+
+        .walking .leg-left { animation: leg-swing 0.4s infinite alternate; }
+        .walking .leg-right { animation: leg-swing 0.4s infinite alternate-reverse; }
+
+        @keyframes leg-swing { from { transform: rotate(-25deg); } to { transform: rotate(25deg); } }
+
+        /* Objects */
+        .pedestal { width: 40px; height: 40px; background: #444; border: 3px solid #222; border-radius: 4px; }
+        .orb {
+            width: 20px; height: 20px; border-radius: 50%;
+            position: absolute; top: -25px; left: 7px;
+            box-shadow: 0 0 15px currentColor;
+            animation: float 2s infinite alternate ease-in-out;
+        }
+        @keyframes float { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+
+        .white-orb { color: #fff; background: #fff; }
+        .black-orb { color: #000; background: #111; border: 1px solid #444; }
+
+        /* Bàn gỗ */
+        .wooden-table {
+            width: 80px; height: 50px;
+            background: linear-gradient(135deg, #4e342e 0%, #3e2723 100%);
+            border: 2px solid #2d1b18;
+            border-bottom: 4px solid #1b110f;
+            border-radius: 4px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.9);
+            filter: brightness(0.6) contrast(0.9);
+            transition: opacity 0.5s;
+        }
+        .table-leg {
+            width: 8px; height: 15px; background: #2d1b18; position: absolute;
+        }
+        .leg-tl { left: 6px; top: 35px; height: 8px; background: #1b110f; z-index: -1; }
+        .leg-tr { right: 6px; top: 35px; height: 8px; background: #1b110f; z-index: -1; }
+        .leg-bl { left: 6px; bottom: -15px; }
+        .leg-br { right: 6px; bottom: -15px; }
+
+        /* Búa */
+        .hammer { width: 40px; height: 50px; position: relative; }
+        .hammer-head { 
+            width: 40px; height: 18px; 
+            background: linear-gradient(to bottom, #777, #333); 
+            border: 2px solid #222; border-radius: 4px; 
+            position: relative; z-index: 2;
+        }
+        .hammer-handle { 
+            width: 8px; height: 35px;
+background: linear-gradient(to right, #5d4037, #3e2723); 
+            border: 1px solid #2a1b18; border-radius: 0 0 4px 4px;
+            position: absolute; left: 16px; top: 15px; z-index: 1;
+        }
+
+        /* Cửa Thoát */
+        #exit-door {
+            position: absolute;
+            width: 120px; height: 50px;
+            background: #000;
+            border: 4px solid #333;
+            border-bottom: none;
+            left: 400px; top: 0;
+            transform: translateX(-50%);
+            z-index: 20;
+            display: flex; justify-content: center; align-items: center;
+            color: #00ff00; font-weight: bold; font-family: sans-serif;
+            box-shadow: 0 0 20px rgba(0,255,0,0.1);
+        }
+        .door-lock-container { 
+            position: absolute; right: -40px; top: 10px; font-size: 32px; 
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            z-index: 21;
+        }
+
+        /* UI */
+        #interact-prompt { 
+            position: absolute; background: #fff; color: #000; font-weight: bold; 
+            padding: 2px 10px; border: 2px solid #000; border-radius: 4px; 
+            font-size: 17px; z-index: 200; pointer-events: none; display: none; animation: bounce 1s infinite; 
+            transform: translate(-50%, -50%);
+        }
+        @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -5px); } }
+        
+        .ui-panel { position: absolute; background: rgba(10, 10, 10, 0.98); border: 1px solid #444; padding: 20px; z-index: 1000; pointer-events: auto; }
+        
+        #flash-msg { 
+            position: absolute; top: 15%; left: 50%; transform: translateX(-50%); 
+            background: #2980b9; padding: 10px 30px; border-radius: 4px; 
+            z-index: 2000; font-weight: bold; display: none; font-size: 20px;
+        }
+        
+        /* Hành trang */
+        .inv-item-row { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #333; cursor: pointer; transition: background 0.2s; }
+        .inv-item-row.selected { background: rgba(243, 156, 18, 0.2); border-left: 4px solid #f39c12; }
+        .inv-item-row.held { background: rgba(52, 152, 219, 0.1); }
+        .inv-icon { font-size: 24px; width: 40px; text-align: center; margin-right: 10px; }
+        .inv-info { flex: 1; }
+        .inv-name { font-weight: bold; font-size: 17px; color: #e5e5e5; }
+        .inv-desc { font-size: 14px; color: #888; font-style: italic; }
+
+        /* Modal Note */
+        #note-view {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 320px; height: 450px;
+            background: #fdf5e6; border: 5px solid #8b4513; padding: 30px;
+            color: #000; display: none; z-index: 2000;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        }
+.shape-row { display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 40px; height: 40px; }
+        .sq-w { width: 30px; height: 30px; background: #fff; }
+        .hex-w { width: 30px; height: 30px; background: #fff; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
+        .cir-b { width: 30px; height: 30px; border-radius: 50%; background: #000; }
+        .tri-b { width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 30px solid #000; }
+
+        #keypad-ui { display: none; top: 30%; left: 50%; transform: translate(-50%, -50%); width: 250px; text-align: center; }
+        #keypad-display { background: #000; padding: 10px; font-family: monospace; font-size: 24px; color: #0f0; margin-bottom: 10px; border: 1px solid #333; }
+
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="world">
+        <div id="room-black" class="room"></div>
+        <div id="room-mid" class="room"></div>
+        <div id="room-white" class="room"></div>
+    </div>
+
+    <div id="black-overlay"></div>
+    <div id="spotlight"></div>
+
+    <!-- Thực thể -->
+    <div id="exit-door">EXIT<div class="door-lock-container" id="door-lock-ui">🔒</div></div>
+
+    <div id="hegel" class="entity" style="left: 380px; top: 350px;">
+        <div class="char-name-tag">Hegel</div>
+        <div class="char-container">
+            <div class="hair-hegel"></div><div class="char-head" style="background: #d4a373;"></div>
+            <div class="char-body"><div class="char-arm arm-left"></div><div class="char-arm arm-right"></div></div>
+            <div class="char-leg leg-left"></div><div class="char-leg leg-right"></div>
+        </div>
+    </div>
+
+    <div id="p-white" class="entity pedestal" style="left: 300px; top: 260px;"><div id="orb-white" class="orb white-orb"></div></div>
+    <div id="p-black" class="entity pedestal" style="left: 460px; top: 260px;"><div id="orb-black" class="orb black-orb"></div></div>
+
+    <div id="item-hammer" class="entity hammer" style="left: 710px; top: 300px;"><div class="hammer-head"></div><div class="hammer-handle"></div></div>
+    
+    <div id="item-table" class="entity wooden-table" style="left: 100px; top: 450px; opacity: 0; pointer-events: none;">
+        <div class="table-leg leg-tl"></div><div class="table-leg leg-tr"></div>
+        <div class="table-leg leg-bl"></div><div class="table-leg leg-br"></div>
+    </div>
+
+    <div id="player" class="entity" style="left: 380px; top: 450px; z-index: 90;">
+        <div class="char-name-tag" style="color: #3498db;">Lữ Khách</div>
+        <div id="player-sprite" class="char-container">
+            <div class="char-head" style="background: #f39c12;"></div>
+<div class="char-body" style="background: #2980b9;"><div class="char-arm arm-left" style="background: #2980b9;"></div><div class="char-arm arm-right" style="background: #2980b9;"></div></div>
+            <div class="char-leg leg-left" style="background: #1c5982;"></div><div class="char-leg leg-right" style="background: #1c5982;"></div>
+        </div>
+    </div>
+
+    <div id="interact-prompt">F</div>
+
+    <!-- UI -->
+    <div id="ui-layer" style="z-index: 2000;">
+        <div id="flash-msg">THÔNG BÁO</div>
+        <div id="dialog-box" class="ui-panel bottom-10 left-1/2 -translate-x-1/2 w-[90%] hidden">
+            <div id="dialog-name" class="font-bold text-orange-400 mb-1 text-2xl">...</div>
+            <div id="dialog-text" class="text-gray-200 italic text-xl">...</div>
+            <div class="text-sm text-gray-500 mt-4 uppercase text-center font-bold tracking-widest">Nhấn F để tiếp tục</div>
+        </div>
+        
+        <div id="inventory-ui" class="ui-panel top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] hidden">
+            <h2 class="text-2xl font-bold mb-4 border-b border-gray-700 pb-2">Hành Trang</h2>
+            <div id="inventory-slots" class="flex flex-col space-y-1 mb-4"></div>
+            <div class="text-sm text-gray-500 uppercase font-bold tracking-tight text-center">W/S: Chọn | F: Dùng/Cầm | I: Đóng</div>
+        </div>
+
+        <div id="note-view">
+            <h3 class="text-center font-bold underline mb-8 text-xl">Mảnh giấy mâu thuẫn</h3>
+            <div id="note-content">
+                <div class="shape-row"><div class="sq-w fragment-w"></div><div class="cir-b fragment-b"></div></div>
+                <div class="shape-row"><div class="hex-w fragment-w"></div><div class="tri-b fragment-b"></div></div>
+                <div class="shape-row"><div class="sq-w fragment-w"></div><div class="tri-b fragment-b"></div></div>
+            </div>
+            <p id="note-context-msg" class="text-center text-sm mt-4 text-gray-800 italic">Sự chênh lệch là đáp án</p>
+            <p class="text-center text-xs mt-6 text-gray-600">Nhấn ESC để đóng</p>
+        </div>
+
+        <div id="keypad-ui" class="ui-panel">
+            <h3 class="text-white font-bold mb-2">NHẬP MẬT MÃ</h3>
+            <div id="keypad-display">_ _ _</div>
+            <p class="text-xs text-gray-500 uppercase">Nhấn số trên bàn phím</p>
+            <p class="text-xs text-gray-500 uppercase mt-1">ESC: Hủy</p>
+        </div>
+
+        <div id="game-over-screen" class="hidden absolute inset-0 bg-black flex flex-col items-center justify-center z-[9999]">
+            <h1 id="end-title" class="text-7xl font-serif font-bold text-red-800 mb-6 tracking-tighter">...</h1>
+            <p id="end-msg" class="text-xl italic text-gray-400 mb-12 text-center max-w-lg leading-relaxed">...</p>
+<div id="end-hint" class="text-gray-500 text-lg uppercase tracking-widest animate-pulse">Ấn phím [F] để hồi sinh</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const progress = Number(localStorage.getItem('mln11Progress') || '0');
+    if (progress < 1) window.location.href = 'index.html';
+    const CONFIG = { speed: 1.5, interactDist: 65 };
+    let flashTimeout;
+
+    const INITIAL_STATE = {
+        player: { x: 380, y: 450 },
+        gameState: 'PLAYING',
+        inventory: [],
+        selectedItemIndex: -1, 
+        previewItemIndex: -1,
+        dialogIndex: 0,
+        flags: { 
+            orbWhiteTaken: false, orbBlackTaken: false, noteTaken: false, 
+            orbBroken: false, doorUnlockedKey: false, doorUnlockedFinal: false,
+            orbSecretNotified: false
+        },
+        interactables: [
+            { id: 'hegel', x: 380, y: 350, w: 40, h: 60, type: 'npc' },
+            { id: 'p-white', x: 300, y: 260, w: 40, h: 40, type: 'orb_pickup' },
+            { id: 'p-black', x: 460, y: 260, w: 40, h: 40, type: 'orb_pickup' },
+            { id: 'exit-door', x: 400, y: 25, w: 120, h: 50, type: 'door' }, 
+            { id: 'door-lock', x: 485, y: 35, w: 50, h: 50, type: 'lock' },
+            { id: 'hammer', x: 710, y: 300, w: 40, h: 50, type: 'hammer' },
+            { id: 'table', x: 100, y: 450, w: 80, h: 50, type: 'table_interact' }
+        ],
+        passwordInput: ""
+    };
+
+    let state = JSON.parse(JSON.stringify(INITIAL_STATE));
+    const keys = {};
+    const dialoguesHegel = [
+        "Mâu thuẫn ràng buộc với nhau, tạo ra sự phát triển.",
+        "Mâu thuẫn sẽ là thứ giúp ngươi được giải thoát."
+    ];
+
+    let obstacles = [];
+    let playerEl, playerSpriteEl, dialogBox, dialogText, invUI, invSlots, flashMsg, interactPromptEl, spotlightEl, noteViewEl, keypadUI, keypadDisplay, gameOverScreen;
+
+    function init() {
+        playerEl = document.getElementById('player');
+        playerSpriteEl = document.getElementById('player-sprite');
+        dialogBox = document.getElementById('dialog-box');
+        dialogText = document.getElementById('dialog-text');
+        invUI = document.getElementById('inventory-ui');
+        invSlots = document.getElementById('inventory-slots');
+        flashMsg = document.getElementById('flash-msg');
+        interactPromptEl = document.getElementById('interact-prompt');
+        spotlightEl = document.getElementById('spotlight');
+        noteViewEl = document.getElementById('note-view');
+        keypadUI = document.getElementById('keypad-ui');
+        keypadDisplay = document.getElementById('keypad-display');
+        gameOverScreen = document.getElementById('game-over-screen');
+
+        refreshObstacles();
+
+        window.addEventListener('keydown', e => { keys[e.code]=true; handleInput(e); });
+        window.addEventListener('keyup', e => { keys[e.code]=false; });
+        requestAnimationFrame(gameLoop);
+    }
+
+    function refreshObstacles() {
+        obstacles = state.interactables.map(o => ({
+            id: o.id, x: o.x, y: o.y, w: o.w, h: o.h
+        }));
+}
+
+    function handleInput(e) {
+        if(state.gameState === 'GAMEOVER') {
+            if(e.code === 'KeyF') window.location.reload();
+            return;
+        }
+
+        if(state.gameState === 'KEYPAD') {
+            if(e.code === 'Escape') { state.gameState = 'PLAYING'; keypadUI.style.display = 'none'; state.passwordInput = ""; return; }
+            if(!isNaN(e.key) && e.key !== " ") {
+                state.passwordInput += e.key;
+                keypadDisplay.textContent = state.passwordInput.padEnd(3, '_').split('').join(' ');
+                if(state.passwordInput.length === 3) {
+                    if(state.passwordInput === "421") {
+                        state.flags.doorUnlockedFinal = true;
+                        document.getElementById('exit-door').style.boxShadow = "0 0 50px #00ff00";
+                        finishGame(true);
+                    } else {
+                        showFlash("Mật mã không chính xác.");
+                        state.gameState = 'PLAYING';
+                        keypadUI.style.display = 'none';
+                        state.passwordInput = "";
+                    }
+                }
+            }
+            return;
+        }
+
+        if(e.code === 'KeyF') {
+            if(state.gameState === 'PLAYING') interact();
+            else if(state.gameState === 'DIALOG') nextDialog();
+            else if(state.gameState === 'INVENTORY') useEquipItem();
+        }
+        if(e.code === 'KeyI' && state.gameState !== 'DIALOG') {
+            if(state.gameState === 'PLAYING') openInventory();
+            else closeInventory();
+        }
+        if(state.gameState === 'INVENTORY') {
+            if(e.code === 'KeyW') { state.previewItemIndex = Math.max(0, state.previewItemIndex - 1); updateInventoryUI(); }
+            if(e.code === 'KeyS') { state.previewItemIndex = Math.min(state.inventory.length - 1, state.previewItemIndex + 1); updateInventoryUI(); }
+        }
+        if(e.code === 'Escape') { 
+            closeInventory(); 
+            noteViewEl.style.display = 'none';
+            keypadUI.style.display = 'none';
+            state.gameState = 'PLAYING'; 
+        }
+    }
+
+    function isColliding(nX, nY) {
+        const held = state.inventory[state.selectedItemIndex];
+        const hasWhiteLight = state.player.x < 245 && held && held.id === 'orb_white';
+
+        let topBound = 20;
+        if(nX > 340 && nX < 460) topBound = 55;
+
+        if (nX < 20 || nX > 780 || nY < topBound || nY > 580) return true;
+        
+        for (let obs of obstacles) {
+            // Chiếc bàn chỉ có vật cản khi có ánh sáng trắng
+            if (obs.id === 'table' && !hasWhiteLight) continue;
+            
+            const left = obs.x - obs.w/2;
+            const right = obs.x + obs.w/2;
+            const top = obs.y - obs.h/2;
+            const bottom = obs.y + obs.h/2;
+if (nX + 10 > left && nX - 10 < right && nY + 25 > top && nY + 15 < bottom) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function interact() {
+        const p = state.player;
+        const held = state.inventory[state.selectedItemIndex];
+        const hasWhiteLight = state.player.x < 245 && held && held.id === 'orb_white';
+
+        if(dist(p.x, p.y, 380, 350) < CONFIG.interactDist) { 
+            state.gameState = 'DIALOG'; state.dialogIndex = 0; dialogBox.classList.remove('hidden'); 
+            document.getElementById('dialog-name').textContent = "Hegel"; dialogText.textContent = dialoguesHegel[0]; 
+            return; 
+        }
+
+        if(!state.flags.orbWhiteTaken && dist(p.x, p.y, 300, 260) < CONFIG.interactDist) {
+            state.inventory.push({ id: 'orb_white', name: 'Quả cầu trắng', icon: '⚪', type:'equip', desc: 'Viên đá tỏa ánh sáng thuần khiết.' });
+            state.flags.orbWhiteTaken = true;
+            document.getElementById('orb-white').style.display = 'none';
+            showFlash("ĐÃ NHẬN: QUẢ CẦU TRẮNG");
+            return;
+        }
+
+        if(!state.flags.orbBlackTaken && dist(p.x, p.y, 460, 260) < CONFIG.interactDist) {
+            state.inventory.push({ id: 'orb_black', name: 'Quả cầu đen', icon: '⚫', type:'equip', desc: 'Một khối vật chất đen đặc.' });
+            state.flags.orbBlackTaken = true;
+            document.getElementById('orb-black').style.display = 'none';
+            showFlash("ĐÃ NHẬN: QUẢ CẦU ĐEN");
+            return;
+        }
+
+        if(dist(p.x, p.y, 400, 50) < 80 || dist(p.x, p.y, 485, 50) < 80) {
+            if (!state.flags.doorUnlockedKey) {
+                if (held && held.id === 'key') {
+                    state.flags.doorUnlockedKey = true;
+                    state.inventory.splice(state.selectedItemIndex, 1);
+                    state.selectedItemIndex = -1;
+                    document.getElementById('door-lock-ui').textContent = "🔓";
+                    showFlash("Đã tra chìa vào ổ. Bây giờ cần mật mã.");
+                } else { showFlash("Cửa đã khóa chặt. Cần một chiếc chìa khóa."); }
+            } else {
+                state.gameState = 'KEYPAD';
+                keypadUI.style.display = 'block';
+                keypadDisplay.textContent = "_ _ _";
+            }
+            return;
+        }
+
+        if (p.x > 550 && dist(p.x, p.y, 710, 300) < CONFIG.interactDist) {
+            if (held && held.id === 'orb_black' && state.flags.orbSecretNotified) {
+                state.flags.orbBroken = true;
+                state.inventory.splice(state.selectedItemIndex, 1);
+                state.selectedItemIndex = -1;
+                state.inventory.push({ id: 'key', name: 'Chìa khóa Hư vô', icon: '🗝️', type:'equip', desc: 'Một chiếc chìa khóa cũ nằm bên trong quả cầu.' });
+showFlash("XOẢNG! Quả cầu vỡ tan, bạn nhặt được chìa khóa.");
+            } else { showFlash("Tôi chưa biết chiếc búa này dùng để làm gì."); }
+            return;
+        }
+
+        // Tương tác Bàn gỗ: Chỉ khả dụng khi có ánh sáng trắng
+        if (hasWhiteLight && dist(p.x, p.y, 100, 450) < 65) {
+            if(!state.flags.noteTaken) {
+                state.inventory.push({ id: 'note', name: 'Mảnh giấy bí ẩn', icon: '📜', type: 'use', desc: 'Ghi chép về những hình khối kỳ lạ.' });
+                state.flags.noteTaken = true;
+                showFlash("Nhặt được 1 mảnh giấy bí ẩn.");
+            } else { showFlash("Cái bàn giờ đây trống không."); }
+        }
+    }
+
+    function openInventory() { state.gameState = 'INVENTORY'; if(state.previewItemIndex === -1 && state.inventory.length > 0) state.previewItemIndex = 0; invUI.classList.remove('hidden'); updateInventoryUI(); }
+    function closeInventory() { state.gameState = 'PLAYING'; invUI.classList.add('hidden'); }
+    
+    function useEquipItem() {
+        const it = state.inventory[state.previewItemIndex];
+        if(!it) return;
+        if(it.type === 'equip') {
+            state.selectedItemIndex = state.previewItemIndex;
+            showFlash(`ĐANG CẦM: ${it.name.toUpperCase()}`);
+            closeInventory();
+        } else if(it.id === 'note') {
+            renderNoteUI();
+            closeInventory();
+            state.gameState = 'DIALOG'; 
+            noteViewEl.style.display = 'block';
+        }
+    }
+
+    function renderNoteUI() {
+        const whiteFrags = document.querySelectorAll('.fragment-w');
+        const blackFrags = document.querySelectorAll('.fragment-b');
+        whiteFrags.forEach(f => f.style.visibility = 'hidden');
+        blackFrags.forEach(f => f.style.visibility = 'hidden');
+        
+        if (state.player.x < 250) {
+            whiteFrags.forEach(f => f.style.visibility = 'visible');
+        } else if (state.player.x > 550) {
+            blackFrags.forEach(f => f.style.visibility = 'visible');
+        }
+    }
+
+    function nextDialog() {
+        state.dialogIndex++;
+        if(state.dialogIndex >= dialoguesHegel.length) { state.gameState='PLAYING'; dialogBox.classList.add('hidden'); }
+        else dialogText.textContent = dialoguesHegel[state.dialogIndex];
+    }
+
+    function updateInventoryUI() {
+        invSlots.innerHTML = state.inventory.length ? '' : '<p class="text-center text-gray-600 py-4">Túi đồ trống</p>';
+        state.inventory.forEach((it, i) => { 
+            const isPrev = i===state.previewItemIndex, isHeld = i===state.selectedItemIndex; 
+            invSlots.innerHTML += `
+            <div class="inv-item-row ${isPrev?'selected':''} ${isHeld?'held':''}">
+                <div class="inv-icon">${it.icon}</div>
+                <div class="inv-info">
+<div class="inv-name">${it.name} ${isHeld ? '<span class="text-blue-400 text-xs ml-2">(Đang cầm)</span>' : ''}</div>
+                    <div class="inv-desc">${it.desc}</div>
+                </div>
+            </div>`; 
+        });
+    }
+
+    function showFlash(txt) {
+        const fMsg = document.getElementById('flash-msg');
+        fMsg.textContent = txt; fMsg.style.display = 'block';
+        if (flashTimeout) clearTimeout(flashTimeout);
+        flashTimeout = setTimeout(() => { fMsg.style.display = 'none'; }, 3000);
+    }
+    
+    function dist(x1, y1, x2, y2) { return Math.sqrt((x1-x2)**2 + (y1-y2)**2); }
+
+    function setProgress(level) {
+        const current = Number(localStorage.getItem('mln11Progress') || '0');
+        if (level > current) localStorage.setItem('mln11Progress', String(level));
+    }
+
+    function finishGame(win) {
+        state.gameState='GAMEOVER'; gameOverScreen.classList.remove('hidden');
+        if(win) { 
+            setProgress(2);
+            document.getElementById('end-title').textContent="BIỆN CHỨNG"; 
+            document.getElementById('end-title').style.color = "#4ade80";
+            document.getElementById('end-msg').textContent="Mâu thuẫn không phải là sự kết thúc, mà là động lực của sự phát triển. Thông qua việc hòa hợp giữa hai thái cực Ánh sáng và Bóng tối, bạn đã thấu hiểu được sự vận động của tinh thần tuyệt đối."; 
+            document.getElementById('end-hint').textContent = "Ấn phím [F] để qua màn tiếp theo";
+        }
+    }
+
+    function gameLoop() {
+        if(state.gameState === 'PLAYING') {
+            let dx = 0, dy = 0;
+            if(keys['KeyW']) dy -= CONFIG.speed; if(keys['KeyS']) dy += CONFIG.speed;
+            if(keys['KeyA']) { dx -= CONFIG.speed; playerSpriteEl.style.transform = 'scaleX(-1)'; }
+            if(keys['KeyD']) { dx += CONFIG.speed; playerSpriteEl.style.transform = 'scaleX(1)'; }
+            const nX = state.player.x + dx; const nY = state.player.y + dy;
+            if(!isColliding(nX, nY)) { state.player.x = nX; state.player.y = nY; }
+            if(dx !== 0 || dy !== 0) playerSpriteEl.classList.add('walking'); else playerSpriteEl.classList.remove('walking');
+
+            const held = state.inventory[state.selectedItemIndex];
+            const hasWhiteLight = state.player.x < 245 && held && held.id === 'orb_white';
+            
+            spotlightEl.style.left = state.player.x + 'px';
+            spotlightEl.style.top = state.player.y + 'px';
+
+            if (hasWhiteLight) {
+                spotlightEl.style.display = 'block';
+                document.getElementById('item-table').style.opacity = '0.6';
+            } else {
+                spotlightEl.style.display = 'none';
+                document.getElementById('item-table').style.opacity = '0';
+            }
+
+            if (state.player.x > 540 && held && held.id === 'orb_black' && !state.flags.orbSecretNotified) {
+                showFlash("Có vật thể gì đó trong quả cầu đen...");
+                held.desc = "Bên trong quả cầu chứa vật thể gì đó, có thể đập ra để lấy.";
+                state.flags.orbSecretNotified = true;
+updateInventoryUI();
+            }
+
+            let showP = false;
+            for(let o of state.interactables) {
+                if (o.id === 'table' && (state.flags.noteTaken || !hasWhiteLight)) continue;
+                
+                let checkDist = CONFIG.interactDist;
+                if (o.type === 'door' || o.type === 'lock') checkDist = 80;
+
+                if (dist(state.player.x, state.player.y, o.x, o.y) < checkDist) {
+                    showP = true; break;
+                }
+            }
+            interactPromptEl.style.display = showP ? 'block' : 'none';
+            if(showP) { 
+                interactPromptEl.style.left = state.player.x + 'px'; 
+                interactPromptEl.style.top = (state.player.y - 65) + 'px'; 
+            }
+        }
+        playerEl.style.left = state.player.x + 'px'; playerEl.style.top = state.player.y + 'px';
+        requestAnimationFrame(gameLoop);
+    }
+    window.onload = init;
+</script>
+</body>
+</html>

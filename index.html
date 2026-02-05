@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mê Cung Triết Học</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg-1: #06070d;
+            --bg-2: #0c0f1e;
+            --accent: #f4c95d;
+            --accent-2: #8bd3ff;
+            --text: #e6edf5;
+            --muted: rgba(230, 237, 245, 0.65);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(circle at top, #141a35 0%, #06070d 55%, #040409 100%);
+            font-family: 'Merriweather', serif;
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        .scene {
+            position: relative;
+            width: min(980px, 92vw);
+            height: min(620px, 90vh);
+            border-radius: 24px;
+            overflow: hidden;
+            background: linear-gradient(140deg, var(--bg-1), var(--bg-2) 55%, #090b16 100%);
+            box-shadow: 0 40px 120px rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stars,
+        .mist,
+        .vignette,
+        .glow-orb {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .stars {
+            background-image:
+                radial-gradient(1px 1px at 8% 20%, rgba(255,255,255,0.7) 0, transparent 60%),
+                radial-gradient(1px 1px at 20% 80%, rgba(255,255,255,0.6) 0, transparent 60%),
+                radial-gradient(1.5px 1.5px at 35% 30%, rgba(255,255,255,0.8) 0, transparent 60%),
+                radial-gradient(1px 1px at 50% 15%, rgba(255,255,255,0.5) 0, transparent 60%),
+                radial-gradient(1.5px 1.5px at 70% 45%, rgba(255,255,255,0.65) 0, transparent 60%),
+                radial-gradient(1px 1px at 82% 25%, rgba(255,255,255,0.5) 0, transparent 60%),
+                radial-gradient(1px 1px at 90% 70%, rgba(255,255,255,0.7) 0, transparent 60%),
+                radial-gradient(1px 1px at 12% 55%, rgba(255,255,255,0.5) 0, transparent 60%);
+            animation: drift 30s linear infinite;
+            opacity: 0.9;
+        }
+
+        .mist {
+            background:
+                radial-gradient(circle at 20% 80%, rgba(139, 211, 255, 0.16), transparent 55%),
+                radial-gradient(circle at 80% 30%, rgba(244, 201, 93, 0.12), transparent 50%),
+                radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.08), transparent 45%);
+            filter: blur(2px);
+            animation: mist 18s ease-in-out infinite alternate;
+        }
+
+        .vignette {
+            box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.8);
+        }
+
+        .glow-orb {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(244, 201, 93, 0.35), transparent 70%);
+            right: -60px;
+            top: -60px;
+            animation: orb 10s ease-in-out infinite alternate;
+        }
+
+        .menu {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 18px;
+            padding: 72px;
+            z-index: 1;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            font-family: 'Unbounded', sans-serif;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: rgba(244, 201, 93, 0.8);
+        }
+
+        .logo::before {
+            content: "";
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(244, 201, 93, 0.8);
+            transform: rotate(45deg);
+            box-shadow: 0 0 15px rgba(244, 201, 93, 0.5);
+        }
+
+        h1 {
+            margin: 0;
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(40px, 6vw, 72px);
+            letter-spacing: 0.04em;
+            text-shadow: 0 0 25px rgba(139, 211, 255, 0.35);
+        }
+
+        .tagline {
+            margin: 0;
+            font-size: clamp(16px, 2.2vw, 22px);
+            color: var(--muted);
+            max-width: 520px;
+            line-height: 1.6;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .btn {
+            appearance: none;
+            border: none;
+            text-decoration: none;
+            padding: 14px 28px;
+            border-radius: 999px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-family: 'Unbounded', sans-serif;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, var(--accent), #f7d88a);
+            color: #1b1b24;
+            box-shadow: 0 15px 40px rgba(244, 201, 93, 0.35);
+        }
+
+        .btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 45px rgba(244, 201, 93, 0.45);
+        }
+
+        .btn.ghost {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .btn.ghost:hover {
+            background: rgba(139, 211, 255, 0.12);
+            border-color: rgba(139, 211, 255, 0.4);
+        }
+
+        .levels {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .level-link {
+            position: relative;
+            padding-right: 40px;
+        }
+
+        .level-link .lock {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .level-link.locked {
+            color: rgba(230, 237, 245, 0.4);
+            border-color: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .level-link.locked .lock {
+            opacity: 1;
+        }
+
+        .level-link.locked:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .footer {
+            margin-top: auto;
+            font-size: 12px;
+            letter-spacing: 0.25em;
+            color: rgba(230, 237, 245, 0.4);
+            text-transform: uppercase;
+            font-family: 'Unbounded', sans-serif;
+        }
+
+        .footer span {
+            color: rgba(244, 201, 93, 0.8);
+        }
+
+        @keyframes drift {
+            from { transform: translateY(0); }
+            to { transform: translateY(18px); }
+        }
+
+        @keyframes mist {
+            from { opacity: 0.6; transform: translateY(0); }
+            to { opacity: 1; transform: translateY(-12px); }
+        }
+
+        @keyframes orb {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(-20px, 18px) scale(1.08); }
+        }
+
+        @media (max-width: 720px) {
+            .menu { padding: 42px 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scene">
+        <div class="stars"></div>
+        <div class="mist"></div>
+        <div class="glow-orb"></div>
+        <div class="vignette"></div>
+
+        <main class="menu">
+            <div class="logo">MLN111-Group 8</div>
+            <h1>Mê Cung Triết Học</h1>
+            <p class="tagline">
+                Bước vào mê cung của hoài nghi và ánh sáng. Mỗi quyết định mở ra một tầng ý niệm,
+                nơi chân lý chỉ lộ diện khi bạn dám nhìn thẳng vào chính mình.
+            </p>
+
+            <div class="actions">
+                <a class="btn primary" href="Level1.html">Bắt đầu hành trình</a>
+                <div class="levels">
+                    <a class="btn ghost level-link" data-level="1" data-href="Level1.html" href="Level1.html">Màn 1<span class="lock">🔒</span></a>
+                    <a class="btn ghost level-link locked" data-level="2" data-href="level2.html" href="#" aria-disabled="true">Màn 2<span class="lock">🔒</span></a>
+                    <a class="btn ghost level-link locked" data-level="3" data-href="level3.html" href="#" aria-disabled="true">Màn 3<span class="lock">🔒</span></a>
+                    <a class="btn ghost level-link locked" data-level="4" data-href="level4.html" href="#" aria-disabled="true">Màn 4<span class="lock">🔒</span></a>
+                </div>
+            </div>
+
+            <div class="footer">Nhấn <span>Enter</span> để bắt đầu</div>
+        </main>
+    </div>
+
+    <script>
+        const DEBUG_UNLOCK_LEVEL4 = true;
+        const progress = Number(localStorage.getItem('mln11Progress') || '0');
+        document.querySelectorAll('.level-link').forEach((link) => {
+            const level = Number(link.dataset.level || '0');
+            const unlocked = level === 4 ? (DEBUG_UNLOCK_LEVEL4 || progress >= 3) : (progress >= (level - 1));
+            link.classList.toggle('locked', !unlocked);
+            if (unlocked) {
+                link.setAttribute('href', link.dataset.href);
+                link.setAttribute('aria-disabled', 'false');
+            } else {
+                link.setAttribute('href', '#');
+                link.setAttribute('aria-disabled', 'true');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const locked = e.target.closest('.level-link.locked');
+            if (locked) e.preventDefault();
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                window.location.href = 'Level1.html';
+            }
+        });
+    </script>
+</body>
+</html>

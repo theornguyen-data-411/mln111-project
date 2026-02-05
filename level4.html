@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Màn 4: The Paradox of Knowledge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #050505;
+            font-family: 'Merriweather', serif; 
+            color: #d1d5db;
+            user-select: none; /* Ngăn chọn văn bản khi click liên tục */
+        }
+
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            margin: 20px auto;
+            background-color: #0a0a0a;
+            border: 4px solid #333;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,1);
+            outline: none;
+        }
+
+        /* --- Environment --- */
+        #world {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(circle at 50% 30%, #1a1a2e 0%, #000000 80%);
+        }
+
+        .floor-pattern {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.5;
+        }
+
+        /* --- Characters --- */
+        .entity {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            transition: top 0.1s linear, left 0.1s linear;
+        }
+
+        /* --- Characters (Updated Model) --- */
+        .char-container { position: relative; width: 40px; height: 60px; z-index: 90; }
+        
+        .char-head { 
+            position: absolute; top: 2px; left: 11px; width: 18px; height: 18px; 
+            background: #e0e0e0; border: 1.5px solid #000; border-radius: 50%; z-index: 15; 
+        }
+        .char-body { 
+            position: absolute; top: 18px; left: 8px; width: 24px; height: 26px; 
+            background: #5c5c5c; border: 2px solid #000; border-radius: 4px; z-index: 10; 
+        }
+        .char-arm { 
+            position: absolute; width: 6px; height: 16px; 
+            background: #5c5c5c; border: 1px solid #000; border-radius: 3px; top: 2px; 
+        }
+        .arm-left { left: -7px; } .arm-right { right: -7px; }
+        
+        .char-leg { 
+            position: absolute; width: 8px; height: 14px; 
+            background: #333; border: 1px solid #000; border-radius: 3px; top: 42px; 
+        }
+        .leg-left { left: 11px; } .leg-right { right: 11px; }
+        
+        .walking .leg-left { animation: leg-swing 0.4s infinite alternate; }
+        .walking .leg-right { animation: leg-swing 0.4s infinite alternate-reverse; }
+        @keyframes leg-swing { from { transform: rotate(-25deg); } to { transform: rotate(25deg); } }
+
+        .char-name {
+            position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+            white-space: nowrap; font-size: 11px; font-weight: bold;
+            text-shadow: 1px 1px 2px white; z-index: 100;
+        }
+        
+        /* Player Colors */
+        #player .char-head { background: #ffcc80; border: 1px solid #e65100; }
+        #player .char-body { background: #1565c0; border: 1px solid #0d47a1; }
+        #player .char-arm { background: #1565c0; }
+        #player .char-leg { background: #0d47a1; }
+        #player .char-name { color: #0d47a1; }
+
+        /* Hegel Colors */
+        #hegel .char-head { background: #f5f5f5; border: 1px solid #ccc; } 
+        #hegel .char-body { background: #fff; border: 1px solid #ccc; } 
+        #hegel .char-arm { background: #fff; }
+        #hegel .char-leg { background: #eee; }
+        #hegel .char-name { color: #555; }
+        #hegel .char-head::after {
+            content: ''; position: absolute; bottom: -2px; left: 2px; width: 16px; height: 10px;
+            background: #f5f5f5; border-radius: 0 0 10px 10px; z-index: 21;
+        }
+
+        /* --- Objects --- */
+        .item-obj {
+            width: 40px; height: 40px; display: flex; justify-content: center; align-items: center;
+            font-size: 24px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+            z-index: 5;
+        }
+        .decoy { opacity: 0.7; filter: grayscale(0.4) drop-shadow(0 0 4px rgba(255,255,255,0.15)); }
+
+        #paradox-door {
+            position: absolute;
+            width: 100px; height: 140px;
+            background: #000; border: 4px solid #555;
+            left: 400px; top: 60px; /* Starting pos */
+            transform: translateX(-50%);
+            z-index: 5;
+            box-shadow: 0 0 30px rgba(100,0,200,0.3);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: top 0.2s ease-out; /* Changed to match physics update better */
+        }
+        .door-symbol { font-family: 'Cinzel', serif; font-size: 40px; color: #333; }
+        .door-text { font-size: 10px; color: #555; margin-top: 10px; }
+
+        .clock-parts { font-size: 16px; position: absolute; }
+
+        .loop-door {
+            position: absolute;
+            width: 60px; height: 40px;
+            border: 2px solid #6b5b3e;
+            background: rgba(20, 18, 10, 0.9);
+            left: 420px; top: 320px;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 12px rgba(244, 201, 93, 0.25);
+            display: none;
+            z-index: 4;
+        }
+        .loop-door.open { border-color: #fbbf24; box-shadow: 0 0 18px rgba(251, 191, 36, 0.45); }
+        
+        /* UI */
+        #interact-prompt {
+            position: absolute; background: #fff; color: #000; font-weight: bold;
+            padding: 4px 10px; border-radius: 4px; font-size: 12px;
+            z-index: 200; display: none; animation: float-ui 1s infinite;
+            transform: translate(-50%, -100%); pointer-events: none;
+        }
+        @keyframes float-ui { 0% { transform: translate(-50%, -100%); } 50% { transform: translate(-50%, -115%); } }
+
+        .ui-panel {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(15, 20, 25, 0.98); border: 1px solid #555;
+            padding: 20px; color: #e2e8f0; width: 500px; display: none; z-index: 1000;
+            font-family: 'Roboto Slab', serif;
+        }
+
+        #flash-msg {
+            position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9); color: #fbbf24;
+            padding: 10px 20px; border-bottom: 2px solid #fbbf24;
+            font-weight: bold; display: none; z-index: 2000; font-family: 'Cinzel', serif;
+        }
+
+        .inv-row { padding: 8px; border-bottom: 1px solid #333; cursor: pointer; display: flex; align-items: center; }
+        .inv-row.selected { background: rgba(255,255,255,0.1); border-left: 3px solid #fbbf24; }
+
+        .inv-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .inv-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            border: 1px solid #fbbf24;
+            background: transparent;
+            color: #fbbf24;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .inv-btn:hover { background: rgba(251, 191, 36, 0.1); }
+        
+        .quote-wall {
+            position: absolute; top: 20px; width: 100%; text-align: center;
+            font-family: 'Cinzel', serif; color: #444; font-size: 18px; pointer-events: none;
+            line-height: 1.6;
+        }
+        
+        .invisible { opacity: 0.3; filter: grayscale(100%); }
+    </style>
+</head>
+<body>
+
+<div id="game-container" tabindex="0">
+    <div id="world">
+        <div class="floor-pattern"></div>
+        <div class="quote-wall">
+            "PHỦ ĐỊNH CỦA PHỦ ĐỊNH LÀ SỰ THẬT.<br>CHỈ CÓ NỖI SỢ MỚI CÓ THỂ GIẾT CHẾT BẠN."
+        </div>
+    </div>
+
+    <!-- Objects -->
+    <div id="paradox-door">
+        <div class="door-symbol">Ø</div>
+        <div class="door-text">SỢ HÃI = CHẾT</div>
+    </div>
+
+    <div id="rack" class="entity item-obj" style="left: 100px; top: 200px;">🧥</div>
+    <div id="mirror" class="entity item-obj" style="left: 150px; top: 200px; transform: scaleX(-1);">🪞</div>
+    
+    <div id="clock-base" class="entity item-obj" style="left: 700px; top: 500px;">🕰️</div>
+    <!-- Clock parts scattered -->
+    <div id="gear1" class="entity clock-parts" style="left: 650px; top: 520px;">⚙️</div>
+    <div id="gear2" class="entity clock-parts" style="left: 750px; top: 480px;">⚙️</div>
+    <div id="fake-gear" class="entity item-obj decoy" style="left: 720px; top: 540px;">⚙️</div>
+
+    <div id="black-box" class="entity item-obj" style="left: 100px; top: 500px;">⬛</div>
+    
+    <div id="gold-thread" class="entity item-obj" style="left: 400px; top: 300px;">🧵</div>
+    <div id="paradox-scroll" class="entity item-obj decoy" style="left: 560px; top: 430px;">📜</div>
+    <div id="fear-talisman" class="entity item-obj decoy" style="left: 250px; top: 460px;">🪬</div>
+    <div id="loop-door" class="loop-door"></div>
+
+    <!-- NPC Hegel -->
+    <div id="hegel" class="entity" style="left: 600px; top: 200px;">
+        <div class="char-name">Hegel</div>
+        <div class="char-container">
+            <div class="char-head"></div>
+            <div class="char-body">
+                <div class="char-arm arm-left"></div><div class="char-arm arm-right"></div>
+            </div>
+            <div class="char-leg leg-left"></div><div class="char-leg leg-right"></div>
+        </div>
+    </div>
+
+    <!-- Player -->
+    <div id="player" class="entity" style="left: 400px; top: 500px;">
+        <div class="char-name">Bạn</div>
+        <div id="player-model" class="char-container">
+            <div class="char-head"></div>
+            <div class="char-body">
+                <div class="char-arm arm-left"></div><div class="char-arm arm-right"></div>
+            </div>
+            <div class="char-leg leg-left"></div><div class="char-leg leg-right"></div>
+        </div>
+    </div>
+
+    <div id="interact-prompt">F</div>
+
+    <!-- UI -->
+    <div id="flash-msg"></div>
+
+    <div id="dialog-box" class="ui-panel" style="top: auto; bottom: 20px; transform: translateX(-50%); width: 700px;">
+        <h3 id="dialog-name" class="font-bold text-yellow-500 mb-2 font-serif">Hegel</h3>
+        <p id="dialog-text" class="italic text-gray-300">...</p>
+        <p class="text-xs text-gray-500 mt-4 text-right">[F] Tiếp tục</p>
+    </div>
+
+    <div id="inventory-ui" class="ui-panel">
+        <h2 class="text-xl font-bold mb-4 text-yellow-500 text-center font-serif">TÂM TRÍ</h2>
+        <div id="inv-list" class="mb-4 max-h-40 overflow-y-auto border-t border-b border-gray-700"></div>
+        <div class="text-xs text-center text-gray-500">W/S: Chọn | F: Suy ngẫm/Dùng | I: Đóng</div>
+        <div class="inv-actions">
+            <button id="inv-use" class="inv-btn" type="button">Sử dụng</button>
+        </div>
+    </div>
+
+    <div id="end-screen" class="hidden absolute inset-0 bg-black flex flex-col items-center justify-center z-[9999]">
+        <h1 class="text-6xl font-bold text-white mb-6 font-serif">GIÁC NGỘ</h1>
+        <p class="text-gray-400 text-center max-w-lg italic mb-8 leading-loose">
+            "Bạn đã đi lùi để tiến tới.<br>
+            Bạn đã phủ định chính mình để tìm thấy bản ngã.<br>
+            Cánh cửa sự thật đã mở."
+        </p>
+        <button onclick="location.reload()" class="px-8 py-3 border border-white text-white hover:bg-white hover:text-black transition duration-300 font-serif">KHỞI ĐẦU LẠI</button>
+    </div>
+</div>
+
+<script>
+    const DEBUG_UNLOCK_LEVEL4 = false;
+    const progress = Number(localStorage.getItem('mln11Progress') || '0');
+    if (!DEBUG_UNLOCK_LEVEL4 && progress < 3) window.location.href = 'index.html';
+    /* --- CONFIG & STATE --- */
+    const CONFIG = { speed: 3, interactDist: 70 };
+    
+    const STATE = {
+        player: { x: 400, y: 500 },
+        door: { x: 400, y: 60, targetY: 60 },
+        inventory: [],
+        selectedInv: 0,
+        uiState: 'NONE',
+        flags: {
+            hasCloak: false,
+            wearingCloak: false,
+            clockParts: 0,
+            clockFixed: false,
+            clockRepaired: false,
+            boxSolved: false,
+            boxQuestioned: false,
+            threadCut: false,
+            threadCount: 0,
+            threadAccepted: false,
+            threadHatchShown: false,
+            doorOpen: false,
+            doorStepBack: false,
+            mirrorTruthFound: false,
+            cloakFoundTruth: false
+        },
+        objs: [
+            { id: 'hegel', x: 600, y: 200, name: 'Hegel' },
+            { id: 'rack', x: 100, y: 200, name: 'Giá Áo' },
+            { id: 'mirror', x: 150, y: 200, name: 'Gương Soi' },
+            { id: 'clock-base', x: 700, y: 500, name: 'Cỗ Máy Thời Gian' },
+            { id: 'gear1', x: 650, y: 520, name: 'Mảnh vỡ thời gian' },
+            { id: 'gear2', x: 750, y: 480, name: 'Mảnh vỡ ký ức' },
+            { id: 'fake-gear', x: 720, y: 540, name: 'Mảnh vỡ rỗng' },
+            { id: 'black-box', x: 100, y: 500, name: 'Hộp Đen' },
+            { id: 'gold-thread', x: 400, y: 300, name: 'Chỉ Vàng' },
+            { id: 'paradox-scroll', x: 560, y: 430, name: 'Trang Ghi Mâu Thuẫn' },
+            { id: 'fear-talisman', x: 250, y: 460, name: 'Bùa Sợ Hãi' },
+            { id: 'paradox-door', x: 400, y: 60, name: 'Cánh Cửa' }
+        ]
+    };
+
+    const hegelDialogues = [
+        "Chào mừng đến với Nghịch lý. Phủ định không hủy diệt; nó hé lộ bản chất mới.",
+        "Cánh cửa lùi xa khi bạn tiến tới vì nỗi sợ phản chiếu chính bạn. Hãy thử lùi lại — để hiểu.",
+        "Áo choàng khiến bạn vô hình trong gương: đấy là phủ định. Chấp nhận vô hình để thấy bản ngã.",
+        "Cỗ máy thời gian không đo đếm thực tại mà chỉ phản chiếu khuôn khổ nhận thức; lắp ghép mảnh vỡ để hiểu giới hạn.",
+        "Chỉ vàng tự nối lại: vòng lặp vĩnh cửu. Không phải để khuất phục, mà để học và chấp nhận."
+    ];
+    let dialogIdx = 0;
+
+    const keys = {};
+    let flashTimeout;
+
+    // DOM Elements
+    let playerEl, playerModel, doorEl, promptEl, dialogEl, invEl;
+
+    /* --- INITIALIZATION --- */
+    function init() {
+        playerEl = document.getElementById('player');
+        playerModel = document.getElementById('player-model');
+        doorEl = document.getElementById('paradox-door');
+        promptEl = document.getElementById('interact-prompt');
+        dialogEl = document.getElementById('dialog-box');
+        invEl = document.getElementById('inventory-ui');
+        const invUseBtn = document.getElementById('inv-use');
+        if (invUseBtn) invUseBtn.addEventListener('click', useItem);
+
+        document.getElementById('game-container').focus();
+
+        window.addEventListener('keydown', e => {
+            if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) e.preventDefault();
+            keys[e.code] = true;
+            handleInput(e.code);
+        });
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        requestAnimationFrame(loop);
+    }
+
+    /* --- INPUT HANDLING --- */
+    function handleInput(code) {
+        if (STATE.uiState === 'DIALOG') {
+            if (code === 'KeyF') {
+                closeDialog();
+            }
+            return;
+        }
+
+        if (STATE.uiState === 'INVENTORY') {
+            if (code === 'KeyI' || code === 'Escape') toggleInventory();
+            if (code === 'KeyW' || code === 'ArrowUp') {
+                STATE.selectedInv = Math.max(0, STATE.selectedInv - 1);
+                renderInventory();
+            }
+            if (code === 'KeyS' || code === 'ArrowDown') {
+                STATE.selectedInv = Math.min(STATE.inventory.length - 1, STATE.selectedInv + 1);
+                renderInventory();
+            }
+            if (code === 'KeyF') useItem();
+            return;
+        }
+
+        if (STATE.uiState === 'NONE') {
+            if (code === 'KeyF') interact();
+            if (code === 'KeyI') toggleInventory();
+        }
+    }
+
+    /* --- GAME LOOP --- */
+    function loop() {
+        // Chỉ chạy loop di chuyển khi không ở trong UI (Dialogue/Inventory)
+        if (STATE.uiState === 'NONE') {
+            let dx = 0, dy = 0;
+            if (keys['KeyW'] || keys['ArrowUp']) dy = -1;
+            if (keys['KeyS'] || keys['ArrowDown']) dy = 1;
+            if (keys['KeyA'] || keys['ArrowLeft']) dx = -1;
+            if (keys['KeyD'] || keys['ArrowRight']) dx = 1;
+
+            if (dx !== 0 || dy !== 0) {
+                const length = Math.sqrt(dx*dx + dy*dy);
+                dx = (dx / length) * CONFIG.speed;
+                dy = (dy / length) * CONFIG.speed;
+                
+                playerModel.classList.add('walking');
+                if (dx < 0) playerModel.style.transform = "scaleX(-1)";
+                if (dx > 0) playerModel.style.transform = "scaleX(1)";
+            } else {
+                playerModel.classList.remove('walking');
+            }
+
+            STATE.player.x = Math.max(20, Math.min(780, STATE.player.x + dx));
+            STATE.player.y = Math.max(20, Math.min(580, STATE.player.y + dy));
+
+            // Logic Cửa Đảo Ngược
+            if (!STATE.flags.doorOpen) {
+                if (dy < 0 && STATE.player.y < 300) { // Đi tới
+                    STATE.door.y = Math.max(-50, STATE.door.y - 1.8);
+                } else if (dy > 0 && STATE.door.y < 100) { // Đi lùi
+                    STATE.door.y += 1.5;
+                }
+            } else {
+                STATE.door.y = 100;
+            }
+
+            if (!STATE.flags.doorStepBack && dy > 0 && STATE.player.y < 280) {
+                STATE.flags.doorStepBack = true;
+                showFlash("Bạn đã đi lùi một bước.");
+            }
+            
+            playerEl.style.left = STATE.player.x + 'px';
+            playerEl.style.top = STATE.player.y + 'px';
+            doorEl.style.top = STATE.door.y + 'px';
+            
+            // Cập nhật hitbox cửa
+            const doorObj = STATE.objs.find(o => o.id === 'paradox-door');
+            if(doorObj) doorObj.y = STATE.door.y + 70;
+
+            const target = getClosestInteractable();
+            if (target) {
+                promptEl.style.display = 'block';
+                promptEl.style.left = target.x + 'px';
+                promptEl.style.top = (target.y - 40) + 'px';
+            } else {
+                promptEl.style.display = 'none';
+            }
+        }
+        
+        requestAnimationFrame(loop);
+    }
+
+    /* --- INTERACTIONS --- */
+    function getClosestInteractable() {
+        let t = null;
+        let min = CONFIG.interactDist;
+        STATE.objs.forEach(i => {
+            const d = dist(STATE.player.x, STATE.player.y, i.x, i.y);
+            if (d < min) { min = d; t = i; }
+        });
+        return t;
+    }
+
+    function interact() {
+        const target = getClosestInteractable();
+        if (!target) return;
+
+        if (target.id === 'hegel') {
+            showDialog("Hegel", hegelDialogues[dialogIdx]);
+            if (dialogIdx < hegelDialogues.length - 1) dialogIdx++;
+        }
+        else if (target.id === 'rack') {
+            if (!STATE.flags.hasCloak) {
+                STATE.flags.hasCloak = true;
+                addToInv('cloak', 'Áo Choàng Vô Hình', '🧥', 'Phủ định sự hiện diện của bản thân.');
+                showFlash("Đã lấy: Áo Choàng (nhấn I để mặc trước gương).");
+                document.getElementById('rack').style.opacity = 0.5;
+            } else {
+                showDialog("Giá Treo", "Trống rỗng.");
+            }
+        }
+        else if (target.id === 'mirror') {
+            if (STATE.flags.cloakFoundTruth || STATE.flags.mirrorTruthFound) {
+                showDialog("Gương", "Bạn không thấy mình — chỉ còn một khoảng tối. Đây là dấu hiệu của phủ định.");
+            } else {
+                showDialog("Gương", "Bạn nhìn thấy hình ảnh phản chiếu của mình. Vẫn là bạn, chưa có gì thay đổi.");
+            }
+        }
+        else if (target.id === 'clock-base') {
+            if (!STATE.flags.clockFixed && !STATE.flags.clockRepaired) {
+                if (STATE.flags.clockParts >= 2) {
+                    STATE.flags.clockFixed = true;
+                    STATE.flags.clockRepaired = true;
+                    showFlash("Đã sửa đồng hồ");
+                    showDialog("Cỗ Máy", "Kim đồng hồ quay ngược. Thời gian chỉ là ảo giác của nhận thức.");
+                    document.getElementById('clock-base').style.filter = "sepia(1)";
+                } else {
+                    showDialog("Cỗ Máy", "Nó vỡ tan. Cần tìm 2 mảnh vỡ để khôi phục.");
+                }
+            } else {
+                showDialog("Cỗ Máy", "Nó đang đếm những khoảnh khắc vô tận.");
+            }
+        }
+        else if (target.id === 'gear1' || target.id === 'gear2') {
+            STATE.flags.clockParts = (STATE.flags.clockParts || 0) + 1;
+            document.getElementById(target.id).style.display = 'none';
+            STATE.objs = STATE.objs.filter(o => o.id !== target.id);
+            showFlash("Đã nhặt mảnh vỡ thời gian");
+            if (STATE.flags.clockParts >= 2) showFlash("Đủ mảnh vỡ. Hãy sửa cỗ máy thời gian.");
+        }
+        else if (target.id === 'fake-gear') {
+            addToInv('fake_gear', 'Mảnh vỡ rỗng', '⚙️', 'Một bánh răng trơ trọi, không khớp vào cỗ máy.');
+            document.getElementById(target.id).style.display = 'none';
+            STATE.objs = STATE.objs.filter(o => o.id !== target.id);
+            showFlash("Nhặt được một mảnh vỡ lạ...");
+        }
+        else if (target.id === 'black-box') {
+            STATE.flags.boxQuestioned = true;
+            STATE.flags.boxSolved = true;
+            showDialog("Hộp Đen", "Bên trong chỉ là bóng tối. Sự hoài nghi là khởi đầu của tri thức.");
+        }
+        else if (target.id === 'gold-thread') {
+            STATE.flags.threadCount = (STATE.flags.threadCount || 0) + 1;
+            const loopDoorEl = document.getElementById('loop-door');
+            if (!STATE.flags.threadHatchShown) {
+                STATE.flags.threadHatchShown = true;
+                loopDoorEl.style.display = 'block';
+            }
+            if (STATE.flags.threadCount < 3) {
+                showFlash("Cắt chỉ... Nó tự nối lại!");
+            } else {
+                STATE.flags.threadAccepted = true;
+                loopDoorEl.classList.add('open');
+                showDialog("Cuộn Chỉ", "Vòng lặp vĩnh cửu. Bạn chấp nhận rằng mọi thứ sẽ lặp lại.");
+            }
+        }
+        else if (target.id === 'paradox-scroll') {
+            addToInv('paradox_scroll', 'Trang Ghi Mâu Thuẫn', '📜', '“Tiến lên là lối thoát”, nhưng liệu có thật?');
+            document.getElementById(target.id).style.display = 'none';
+            STATE.objs = STATE.objs.filter(o => o.id !== target.id);
+            showDialog("Trang Ghi", "Dòng chữ run rẩy: “Đừng lùi lại, hãy tiến lên.”");
+        }
+        else if (target.id === 'fear-talisman') {
+            addToInv('fear_talisman', 'Bùa Sợ Hãi', '🪬', 'Một vật trấn yểm gieo hoang mang.');
+            document.getElementById(target.id).style.display = 'none';
+            STATE.objs = STATE.objs.filter(o => o.id !== target.id);
+            showDialog("Bùa Sợ Hãi", "Nó thì thầm rằng nỗi sợ mới là chân lý. Bạn có tin không?");
+        }
+        else if (target.id === 'paradox-door') {
+            const allSolved = (STATE.flags.clockFixed || STATE.flags.clockRepaired) && STATE.flags.boxQuestioned &&
+                             STATE.flags.threadAccepted && (STATE.flags.cloakFoundTruth || STATE.flags.mirrorTruthFound) &&
+                             STATE.flags.doorStepBack;
+
+            if (allSolved) {
+                STATE.flags.doorOpen = true;
+                setProgress(4);
+                document.getElementById('end-screen').classList.remove('hidden');
+            } else {
+                if (!STATE.flags.doorStepBack) {
+                    showDialog("Cánh Cửa", "Cánh cửa vẫn lùi xa. Hãy thử đi lùi để đối diện điều đã bỏ qua.");
+                } else {
+                    showDialog("Cánh Cửa", "Cửa không mở. Cần giải quyết hết các nghịch lý trong phòng.");
+                }
+            }
+        }
+    }
+
+    function useItem() {
+        const item = STATE.inventory[STATE.selectedInv];
+        if (!item) return;
+
+        if (item.id === 'cloak') {
+            // Hide inventory UI and consume cloak if used correctly
+            STATE.uiState = 'NONE';
+            invEl.style.display = 'none';
+
+            const distToMirror = dist(STATE.player.x, STATE.player.y, 150, 200);
+            if (distToMirror < 100) {
+                STATE.flags.cloakFoundTruth = true;
+                STATE.flags.mirrorTruthFound = true;
+                // Visually reduce player's opacity to indicate 'invisibility'
+                playerModel.style.opacity = '0.45';
+                showDialog("Bản Ngã", "Bạn mặc áo choàng và nhìn vào gương. Hình ảnh biến mất! Bạn đã phủ định bản thân để tìm thấy sự thật.");
+                removeItem('cloak');
+            } else {
+                showFlash("Bạn phải đứng trước gương để thấy tác dụng của áo choàng.");
+            }
+        }
+        else if (item.id === 'fake_gear') {
+            STATE.uiState = 'NONE';
+            invEl.style.display = 'none';
+            showFlash("Mảnh vỡ này không khớp với cỗ máy.");
+        }
+        else if (item.id === 'paradox_scroll') {
+            STATE.uiState = 'NONE';
+            invEl.style.display = 'none';
+            showDialog("Trang Ghi", "“Sự thật nằm trước mắt.” Nhưng đôi khi, lùi lại mới thấy rõ.");
+        }
+        else if (item.id === 'fear_talisman') {
+            STATE.uiState = 'NONE';
+            invEl.style.display = 'none';
+            showDialog("Bùa Sợ Hãi", "Nỗi sợ phóng đại mọi thứ. Chỉ khi vượt qua nó, bạn mới thấy lối đi.");
+        }
+    }
+
+    /* --- Utils --- */
+    function addToInv(id, name, icon, desc) {
+        STATE.inventory.push({id, name, icon, desc});
+    }
+
+    function removeItem(id) {
+        STATE.inventory = STATE.inventory.filter(i => i.id !== id);
+    }
+
+    function toggleInventory() {
+        if (STATE.uiState === 'INVENTORY') {
+            STATE.uiState = 'NONE';
+            invEl.style.display = 'none';
+        } else {
+            STATE.uiState = 'INVENTORY';
+            invEl.style.display = 'block';
+            renderInventory();
+        }
+    }
+
+    function renderInventory() {
+        const list = document.getElementById('inv-list');
+        list.innerHTML = '';
+        STATE.inventory.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = `inv-row ${idx === STATE.selectedInv ? 'selected' : ''}`;
+            div.innerHTML = `<span class="text-2xl mr-3">${item.icon}</span><div><div class="font-bold text-sm">${item.name}</div><div class="text-[10px] text-gray-400">${item.desc}</div></div>`;
+            div.addEventListener('click', () => {
+                STATE.selectedInv = idx;
+                renderInventory();
+            });
+            list.appendChild(div);
+        });
+        if (STATE.inventory.length === 0) list.innerHTML = '<div class="text-center text-gray-600 text-xs py-2">Trống rỗng</div>';
+    }
+
+    function showDialog(name, text) {
+        STATE.uiState = 'DIALOG';
+        document.getElementById('dialog-name').innerText = name;
+        document.getElementById('dialog-text').innerText = text;
+        dialogEl.style.display = 'block';
+    }
+    function closeDialog() {
+        STATE.uiState = 'NONE';
+        dialogEl.style.display = 'none';
+    }
+
+    function showFlash(msg) {
+        const f = document.getElementById('flash-msg');
+        f.innerText = msg;
+        f.style.display = 'block';
+        clearTimeout(flashTimeout);
+        flashTimeout = setTimeout(() => f.style.display = 'none', 2000);
+    }
+
+    function setProgress(level) {
+        const current = Number(localStorage.getItem('mln11Progress') || '0');
+        if (level > current) localStorage.setItem('mln11Progress', String(level));
+    }
+
+    function dist(x1, y1, x2, y2) { return Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2)); }
+
+    window.onload = init;
+</script>
+</body>
+</html>
