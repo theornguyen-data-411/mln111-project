@@ -362,7 +362,6 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
 <script>
     const progress = Number(localStorage.getItem('mln11Progress') || '0');
     if (progress < 4) window.location.href = 'index.html';
@@ -370,8 +369,12 @@
     const RUN_START_KEY = 'mln11RunStart';
     const SUPABASE_URL = 'https://ttloqljdsfkkrkzsuzwgz.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0bG9xbGpkc2Zrcmt6c3V6d2d6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMzIzMjQsImV4cCI6MjA4NTcwODMyNH0.-AgPKBKeB_XWH6D8cThH5Iy2EBoYRnrF8NkhgK5Qy5g';
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const SUPABASE_TABLES = ['leaderboard', 'leaderboards'];
+    const SUPABASE_HEADERS = {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+    };
     const CONFIG = { speed: 2.2, interactDist: 70 };
     let flashTimeout;
 
@@ -483,10 +486,15 @@
         for (const table of SUPABASE_TABLES) {
             for (const payload of payloads) {
                 try {
-                    const { error } = await supabaseClient
-                        .from(table)
-                        .insert(payload);
-                    if (!error) return;
+                    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+                        method: 'POST',
+                        headers: {
+                            ...SUPABASE_HEADERS,
+                            Prefer: 'return=minimal'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    if (res.ok) return;
                 } catch (err) {
                     console.warn('Leaderboard insert failed', err);
                 }

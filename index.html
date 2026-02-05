@@ -392,15 +392,17 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
     <script>
         const NAME_KEY = 'mln11PlayerName';
         const RUN_START_KEY = 'mln11RunStart';
         const PROGRESS_KEY = 'mln11Progress';
         const SUPABASE_URL = 'https://ttloqljdsfkkrkzsuzwgz.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0bG9xbGpkc2Zrcmt6c3V6d2d6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMzIzMjQsImV4cCI6MjA4NTcwODMyNH0.-AgPKBKeB_XWH6D8cThH5Iy2EBoYRnrF8NkhgK5Qy5g';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const SUPABASE_TABLES = ['leaderboard', 'leaderboards'];
+        const SUPABASE_HEADERS = {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+        };
 
         function formatDuration(ms) {
             const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -414,12 +416,17 @@
         async function fetchLeaderboardRows() {
             let lastError = null;
             for (const table of SUPABASE_TABLES) {
-                const { data, error } = await supabaseClient
-                    .from(table)
-                    .select('*')
-                    .limit(50);
-                if (!error) return { data, table };
-                lastError = error;
+                const url = `${SUPABASE_URL}/rest/v1/${table}?select=*&limit=50`;
+                try {
+                    const res = await fetch(url, { headers: SUPABASE_HEADERS });
+                    if (res.ok) {
+                        const data = await res.json();
+                        return { data, table };
+                    }
+                    lastError = await res.text();
+                } catch (err) {
+                    lastError = err;
+                }
             }
             return { data: null, error: lastError };
         }
