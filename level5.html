@@ -351,14 +351,12 @@
         <p class="text-xs text-center mt-4">[ESC] Thoát</p>
     </div>
 
-    <div id="conclusion-screen">
-        <h1 class="conclusion-title">BIỆN CHỨNG</h1>
-        <p class="conclusion-body">
-            Bạn đã nối lại chuỗi tư liệu – lao động – sản phẩm: máy móc là tư liệu, nhịp làm việc là lao động,
-            và thành phẩm là kết tinh cuối cùng. Khi tư liệu và sản phẩm chi phối con người, sự tha hóa xuất hiện;
-            chỉ khi hiểu mối liên hệ ấy, bạn mới thấy được con đường giải phóng.
+    <div id="conclusion-screen" class="hidden absolute inset-0 bg-black flex flex-col items-center justify-center z-[9999]">
+        <h1 id="end-title" class="text-7xl font-serif font-bold text-emerald-400 mb-6 tracking-tighter">BIỆN CHỨNG</h1>
+        <p id="end-msg" class="text-xl italic text-gray-400 mb-12 text-center max-w-lg leading-relaxed">
+            "Bạn đã nối lại chuỗi tư liệu – lao động – sản phẩm: máy móc là tư liệu, nhịp làm việc là lao động, và thành phẩm là kết tinh cuối cùng. Khi tư liệu và sản phẩm chi phối con người, sự tha hóa xuất hiện; chỉ khi hiểu mối liên hệ ấy, bạn mới thấy được con đường giải phóng."
         </p>
-        <p class="text-xl text-gray-500 tracking-widest animate-pulse">ẤN PHÍM [F] ĐỂ VỀ MENU</p>
+        <div id="end-hint" class="text-gray-500 text-lg uppercase tracking-widest animate-pulse">Ấn phím [F] để về menu</div>
     </div>
 </div>
 
@@ -367,7 +365,7 @@
     if (progress < 4) window.location.href = 'index.html';
     const NAME_KEY = 'mln11PlayerName';
     const RUN_START_KEY = 'mln11RunStart';
-    const SUPABASE_URL = 'https://ttloqljdsfkkrkzsuzwgz.supabase.co';
+    const SUPABASE_URL = 'https://ttloqljdsfkrkzsuzwgz.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0bG9xbGpkc2Zrcmt6c3V6d2d6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMzIzMjQsImV4cCI6MjA4NTcwODMyNH0.-AgPKBKeB_XWH6D8cThH5Iy2EBoYRnrF8NkhgK5Qy5g';
     const SUPABASE_TABLES = ['leaderboard', 'leaderboards'];
     const SUPABASE_HEADERS = {

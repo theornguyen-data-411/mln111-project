@@ -601,22 +601,28 @@
             top: 40%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 200px;
+            width: 260px;
+            padding: 20px;
             text-align: center;
+            background: rgba(12, 14, 22, 0.94);
+            border: 1px solid rgba(214, 178, 94, 0.35);
+            border-radius: 16px;
+            box-shadow: 0 18px 45px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.03);
         }
 
         #keypad-display {
-            background: #000;
-            color: #0f0;
+            background: #0b0f1a;
+            color: #86efac;
             font-family: monospace;
-            font-size: 32px;
-            padding: 10px;
-            border: 1px solid #333;
-            margin-bottom: 10px;
-            letter-spacing: 5px;
+            font-size: 28px;
+            padding: 12px 14px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            letter-spacing: 8px;
             white-space: nowrap;
             display: inline-block;
-            min-width: 140px;
+            min-width: 180px;
             text-align: center;
         }
 
@@ -820,11 +826,9 @@
             <!-- End Screen -->
             <div id="end-screen"
                 class="hidden absolute inset-0 bg-black flex flex-col items-center justify-center z-[9999]">
-                <h1 class="text-4xl font-bold text-white mb-6 text-center leading-tight max-w-[90%]">CHÂN LÝ ĐƯỢC KHAI PHÁ</h1>
-                <p class="text-gray-400 text-center max-w-md italic mb-8">"Bạn đã nhìn thấy ánh sáng bên ngoài cái hang
-                    của nhận thức. Sự thật không phải lúc nào cũng như vẻ bề ngoài."</p>
-                <button onclick="location.href='level4.html'"
-                    class="px-6 py-2 border border-white text-white hover:bg-white hover:text-black transition">Qua Màn [F]</button>
+                <h1 id="end-title" class="text-7xl font-serif font-bold text-emerald-400 mb-6 tracking-tighter">CHÂN LÝ ĐƯỢC KHAI PHÁ</h1>
+                <p id="end-msg" class="text-xl italic text-gray-400 mb-12 text-center max-w-lg leading-relaxed">"Bạn đã nhìn thấy ánh sáng bên ngoài cái hang của nhận thức. Sự thật không phải lúc nào cũng như vẻ bề ngoài."</p>
+                <div id="end-hint" class="text-gray-500 text-lg uppercase tracking-widest animate-pulse">Ấn phím [F] để qua màn tiếp theo</div>
             </div>
         </div>
     </div>
