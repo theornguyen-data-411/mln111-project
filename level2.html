@@ -3,26 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hegel - Sự Thống Nhất Của Các Mặt Đối Lập</title>
+    <title>Màn 2 — Huyền Vực Tư Duy</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --frame-bg: #06070d;
+            --frame-border: rgba(255, 255, 255, 0.08);
+            --frame-shadow: 0 40px 120px rgba(0, 0, 0, 0.7);
+            --panel-bg: rgba(12, 15, 30, 0.95);
+            --panel-border: rgba(255, 255, 255, 0.12);
+            --accent: #f4c95d;
+            --accent-2: #8bd3ff;
+        }
+
         body {
             margin: 0;
             overflow: hidden;
-            background-color: #080a05;
-            font-family: 'Times New Roman', serif;
-            color: #d1d5db;
+            background: radial-gradient(circle at top, #141a35 0%, #06070d 55%, #040409 100%);
+            font-family: 'Merriweather', serif;
+            color: #e6edf5;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
         }
 
         #game-container {
             position: relative;
             width: 800px;
             height: 600px;
-            margin: 20px auto;
+            margin: 0;
             background: #111;
-            border: 8px solid #2c2c24;
+            border: 1px solid var(--frame-border);
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 0 100px rgba(0,0,0,0.9);
+            box-shadow: var(--frame-shadow);
+            outline: none;
         }
 
         /* --- Bản đồ thế giới --- */
@@ -186,19 +202,26 @@ background: linear-gradient(to right, #5d4037, #3e2723);
 
         /* UI */
         #interact-prompt { 
-            position: absolute; background: #fff; color: #000; font-weight: bold; 
-            padding: 2px 10px; border: 2px solid #000; border-radius: 4px; 
-            font-size: 17px; z-index: 200; pointer-events: none; display: none; animation: bounce 1s infinite; 
+            position: absolute; background: rgba(244, 201, 93, 0.95); color: #1b1b24; font-weight: bold; 
+            padding: 4px 12px; border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 999px; 
+            font-size: 14px; z-index: 200; pointer-events: none; display: none; animation: bounce 1s infinite; 
             transform: translate(-50%, -50%);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.35);
         }
         @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -5px); } }
         
-        .ui-panel { position: absolute; background: rgba(10, 10, 10, 0.98); border: 1px solid #444; padding: 20px; z-index: 1000; pointer-events: auto; }
+        .ui-panel { 
+            position: absolute; background: var(--panel-bg); border: 1px solid var(--panel-border); 
+            padding: 20px; z-index: 1000; pointer-events: auto; border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+        }
         
         #flash-msg { 
-            position: absolute; top: 15%; left: 50%; transform: translateX(-50%); 
-            background: #2980b9; padding: 10px 30px; border-radius: 4px; 
-            z-index: 2000; font-weight: bold; display: none; font-size: 20px;
+            position: absolute; top: 12%; left: 50%; transform: translateX(-50%); 
+            background: rgba(244, 201, 93, 0.95); color: #1b1b24;
+            padding: 10px 30px; border-radius: 999px; 
+            z-index: 2000; font-weight: bold; display: none; font-size: 18px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.35);
         }
         
         /* Hành trang */

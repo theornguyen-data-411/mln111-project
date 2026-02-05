@@ -4,30 +4,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Màn 3: The Philosopher's Dilemma</title>
+    <title>Màn 3 — Huyền Vực Tư Duy</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Unbounded:wght@400;700&display=swap"
         rel="stylesheet">
 
     <style>
+        :root {
+            --frame-bg: #06070d;
+            --frame-border: rgba(255, 255, 255, 0.08);
+            --frame-shadow: 0 40px 120px rgba(0, 0, 0, 0.7);
+            --panel-bg: rgba(12, 15, 30, 0.95);
+            --panel-border: rgba(255, 255, 255, 0.12);
+            --accent: #f4c95d;
+            --accent-2: #8bd3ff;
+        }
+
         body {
             margin: 0;
             overflow: hidden;
-            background-color: #87CEEB;
+            background: radial-gradient(circle at top, #141a35 0%, #06070d 55%, #040409 100%);
             font-family: 'Merriweather', serif;
-            color: #333;
+            color: #e6edf5;
             user-select: none;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
         }
 
         #game-container {
             position: relative;
             width: 800px;
             height: 600px;
-            margin: 20px auto;
+            margin: 0;
             background-color: #333;
-            border: 8px solid #4682B4;
+            border: 1px solid var(--frame-border);
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--frame-shadow);
             outline: none;
         }
 
@@ -77,8 +91,8 @@
             left: 11px;
             width: 18px;
             height: 18px;
-            background: #e0e0e0;
-            border: 1.5px solid #000;
+            background: #f39c12;
+            border: 1.5px solid #fff;
             border-radius: 50%;
             z-index: 15;
         }
@@ -89,8 +103,8 @@
             left: 8px;
             width: 24px;
             height: 26px;
-            background: #5c5c5c;
-            border: 2px solid #000;
+            background: #2980b9;
+            border: 2px solid #fff;
             border-radius: 4px;
             z-index: 10;
         }
@@ -99,26 +113,28 @@
             position: absolute;
             width: 6px;
             height: 16px;
-            background: #5c5c5c;
-            border: 1px solid #000;
+            background: #2980b9;
+            border: 1px solid #fff;
             border-radius: 3px;
             top: 2px;
         }
 
         .arm-left {
             left: -7px;
+            transform-origin: top center;
         }
 
         .arm-right {
             right: -7px;
+            transform-origin: top center;
         }
 
         .char-leg {
             position: absolute;
             width: 8px;
             height: 14px;
-            background: #333;
-            border: 1px solid #000;
+            background: #1c5982;
+            border: 1px solid #fff;
             border-radius: 3px;
             top: 42px;
         }
@@ -139,6 +155,14 @@
             animation: leg-swing 0.4s infinite alternate-reverse;
         }
 
+        .walking .arm-left {
+            animation: arm-swing 0.4s infinite alternate-reverse;
+        }
+
+        .walking .arm-right {
+            animation: arm-swing 0.4s infinite alternate;
+        }
+
         @keyframes leg-swing {
             from {
                 transform: rotate(-25deg);
@@ -149,40 +173,36 @@
             }
         }
 
-        .char-name {
+        @keyframes arm-swing {
+            from {
+                transform: rotate(-20deg);
+            }
+
+            to {
+                transform: rotate(20deg);
+            }
+        }
+
+        .char-name-tag {
             position: absolute;
-            top: -35px;
+            top: -32px;
             left: 50%;
             transform: translateX(-50%);
             white-space: nowrap;
-            font-size: 11px;
+            font-size: 14px;
             font-weight: bold;
-            text-shadow: 1px 1px 2px white;
+            color: #f39c12;
+            text-shadow: 1px 1px 2px black;
+            pointer-events: none;
             z-index: 100;
         }
 
         /* Player Colors (Overrides base model) */
-        #player .char-head {
-            background: #ffcc80;
-            border: 1px solid #e65100;
-        }
-
-        #player .char-body {
-            background: #1565c0;
-            border: 1px solid #0d47a1;
-        }
-
-        #player .char-arm {
-            background: #1565c0;
-        }
-
-        #player .char-leg {
-            background: #0d47a1;
-        }
-
-        #player .char-name {
-            color: #0d47a1;
-        }
+        #player .char-head { background: #f39c12; border: 1.5px solid #fff; }
+        #player .char-body { background: #2980b9; border: 2px solid #fff; }
+        #player .char-arm { background: #2980b9; border-color: #fff; }
+        #player .char-leg { background: #1c5982; border-color: #fff; }
+        #player .char-name-tag { color: #3498db; }
 
         /* Plato Colors */
         #plato .char-head {
@@ -203,8 +223,17 @@
             background: #eee;
         }
 
-        #plato .char-name {
-            color: #555;
+        #plato .char-name-tag { color: #f39c12; }
+
+        .hair-plato {
+            position: absolute;
+            top: 0;
+            left: 8px;
+            width: 24px;
+            height: 16px;
+            background: #dcdcdc;
+            border-radius: 50% 50% 10% 10%;
+            z-index: 14;
         }
 
         /* Râu Plato */
@@ -427,17 +456,18 @@
         /* UI */
         #interact-prompt {
             position: absolute;
-            background: #fff;
-            color: #000;
+            background: rgba(244, 201, 93, 0.95);
+            color: #1b1b24;
             font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 4px 12px;
+            border-radius: 999px;
             font-size: 12px;
-            border: 1px solid #000;
+            border: 1px solid rgba(255, 255, 255, 0.5);
             z-index: 200;
             display: none;
             animation: float-ui 1s infinite;
             transform: translate(-50%, -100%);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.35);
         }
 
         @keyframes float-ui {
@@ -452,28 +482,30 @@
 
         .ui-panel {
             position: absolute;
-            background: rgba(30, 30, 30, 0.95);
-            color: #ddd;
-            border: 2px solid #555;
+            background: var(--panel-bg);
+            color: #e6edf5;
+            border: 1px solid var(--panel-border);
             padding: 20px;
             z-index: 1000;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
         }
 
         #flash-msg {
             position: absolute;
-            top: 15%;
+            top: 12%;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
+            background: rgba(244, 201, 93, 0.95);
+            color: #1b1b24;
             padding: 10px 30px;
-            border-radius: 4px;
-            border: 2px solid #4682B4;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.4);
             z-index: 2000;
             font-weight: bold;
             display: none;
-            font-size: 18px;
+            font-size: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.35);
         }
 
         .inv-item-row {
@@ -605,8 +637,9 @@
 
         <!-- NPC Plato -->
         <div id="plato" class="entity" style="left: 200px; top: 350px;">
-            <div class="char-name">Plato</div>
+            <div class="char-name-tag">Plato</div>
             <div class="char-container">
+                <div class="hair-plato"></div>
                 <div class="char-head"></div>
                 <div class="char-body">
                     <div class="char-arm arm-left"></div>
@@ -619,7 +652,7 @@
 
         <!-- Player -->
         <div id="player" class="entity" style="left: 400px; top: 400px; z-index: 90;">
-            <div class="char-name">Bạn</div>
+            <div class="char-name-tag">Lữ Khách</div>
             <div class="char-container">
                 <div class="char-head"></div>
                 <div class="char-body">

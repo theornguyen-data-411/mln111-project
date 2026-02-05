@@ -3,29 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Màn 4: The Paradox of Knowledge</title>
+    <title>Màn 4 — Huyền Vực Tư Duy</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            --frame-bg: #06070d;
+            --frame-border: rgba(255, 255, 255, 0.08);
+            --frame-shadow: 0 40px 120px rgba(0, 0, 0, 0.7);
+            --panel-bg: rgba(12, 15, 30, 0.95);
+            --panel-border: rgba(255, 255, 255, 0.12);
+            --accent: #f4c95d;
+            --accent-2: #8bd3ff;
+        }
+
         body {
             margin: 0;
             overflow: hidden;
-            background-color: #050505;
+            background: radial-gradient(circle at top, #141a35 0%, #06070d 55%, #040409 100%);
             font-family: 'Merriweather', serif; 
-            color: #d1d5db;
+            color: #e6edf5;
             user-select: none; /* Ngăn chọn văn bản khi click liên tục */
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
         }
 
         #game-container {
             position: relative;
             width: 800px;
             height: 600px;
-            margin: 20px auto;
+            margin: 0;
             background-color: #0a0a0a;
-            border: 4px solid #333;
+            border: 1px solid var(--frame-border);
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 0 50px rgba(0,0,0,1);
+            box-shadow: var(--frame-shadow);
             outline: none;
         }
 
@@ -61,47 +75,61 @@
         
         .char-head { 
             position: absolute; top: 2px; left: 11px; width: 18px; height: 18px; 
-            background: #e0e0e0; border: 1.5px solid #000; border-radius: 50%; z-index: 15; 
+            background: #f39c12; border: 1.5px solid #fff; border-radius: 50%; z-index: 15; 
         }
         .char-body { 
             position: absolute; top: 18px; left: 8px; width: 24px; height: 26px; 
-            background: #5c5c5c; border: 2px solid #000; border-radius: 4px; z-index: 10; 
+            background: #2980b9; border: 2px solid #fff; border-radius: 4px; z-index: 10; 
         }
         .char-arm { 
             position: absolute; width: 6px; height: 16px; 
-            background: #5c5c5c; border: 1px solid #000; border-radius: 3px; top: 2px; 
+            background: #2980b9; border: 1px solid #fff; border-radius: 3px; top: 2px; 
         }
-        .arm-left { left: -7px; } .arm-right { right: -7px; }
+        .arm-left { left: -7px; transform-origin: top center; }
+        .arm-right { right: -7px; transform-origin: top center; }
         
         .char-leg { 
             position: absolute; width: 8px; height: 14px; 
-            background: #333; border: 1px solid #000; border-radius: 3px; top: 42px; 
+            background: #1c5982; border: 1px solid #fff; border-radius: 3px; top: 42px; 
         }
         .leg-left { left: 11px; } .leg-right { right: 11px; }
         
         .walking .leg-left { animation: leg-swing 0.4s infinite alternate; }
         .walking .leg-right { animation: leg-swing 0.4s infinite alternate-reverse; }
+        .walking .arm-left { animation: arm-swing 0.4s infinite alternate-reverse; }
+        .walking .arm-right { animation: arm-swing 0.4s infinite alternate; }
         @keyframes leg-swing { from { transform: rotate(-25deg); } to { transform: rotate(25deg); } }
+        @keyframes arm-swing { from { transform: rotate(-20deg); } to { transform: rotate(20deg); } }
 
-        .char-name {
-            position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
-            white-space: nowrap; font-size: 11px; font-weight: bold;
-            text-shadow: 1px 1px 2px white; z-index: 100;
+        .char-name-tag {
+            position: absolute; top: -32px; left: 50%; transform: translateX(-50%);
+            white-space: nowrap; font-size: 14px; font-weight: bold;
+            color: #f39c12; text-shadow: 1px 1px 2px black; pointer-events: none; z-index: 100;
         }
         
         /* Player Colors */
-        #player .char-head { background: #ffcc80; border: 1px solid #e65100; }
-        #player .char-body { background: #1565c0; border: 1px solid #0d47a1; }
-        #player .char-arm { background: #1565c0; }
-        #player .char-leg { background: #0d47a1; }
-        #player .char-name { color: #0d47a1; }
+        #player .char-head { background: #f39c12; border: 1.5px solid #fff; }
+        #player .char-body { background: #2980b9; border: 2px solid #fff; }
+        #player .char-arm { background: #2980b9; border-color: #fff; }
+        #player .char-leg { background: #1c5982; border-color: #fff; }
+        #player .char-name-tag { color: #3498db; }
 
         /* Hegel Colors */
-        #hegel .char-head { background: #f5f5f5; border: 1px solid #ccc; } 
-        #hegel .char-body { background: #fff; border: 1px solid #ccc; } 
-        #hegel .char-arm { background: #fff; }
-        #hegel .char-leg { background: #eee; }
-        #hegel .char-name { color: #555; }
+        #hegel .char-head { background: #f5f5f5; border: 1.5px solid #fff; } 
+        #hegel .char-body { background: #fff; border: 2px solid #ddd; } 
+        #hegel .char-arm { background: #fff; border-color: #ddd; }
+        #hegel .char-leg { background: #eee; border-color: #ddd; }
+        #hegel .char-name-tag { color: #f39c12; }
+        .hair-hegel {
+            position: absolute;
+            top: 0;
+            left: 8px;
+            width: 24px;
+            height: 18px;
+            background: #555;
+            border-radius: 50% 50% 0 0;
+            z-index: 14;
+        }
         #hegel .char-head::after {
             content: ''; position: absolute; bottom: -2px; left: 2px; width: 16px; height: 10px;
             background: #f5f5f5; border-radius: 0 0 10px 10px; z-index: 21;
@@ -146,25 +174,30 @@
         
         /* UI */
         #interact-prompt {
-            position: absolute; background: #fff; color: #000; font-weight: bold;
-            padding: 4px 10px; border-radius: 4px; font-size: 12px;
+            position: absolute; background: rgba(244, 201, 93, 0.95); color: #1b1b24; font-weight: bold;
+            padding: 4px 12px; border-radius: 999px; font-size: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
             z-index: 200; display: none; animation: float-ui 1s infinite;
             transform: translate(-50%, -100%); pointer-events: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.35);
         }
         @keyframes float-ui { 0% { transform: translate(-50%, -100%); } 50% { transform: translate(-50%, -115%); } }
 
         .ui-panel {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(15, 20, 25, 0.98); border: 1px solid #555;
-            padding: 20px; color: #e2e8f0; width: 500px; display: none; z-index: 1000;
-            font-family: 'Roboto Slab', serif;
+            background: var(--panel-bg); border: 1px solid var(--panel-border);
+            padding: 20px; color: #e6edf5; width: 500px; display: none; z-index: 1000;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+            font-family: 'Merriweather', serif;
         }
 
         #flash-msg {
-            position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9); color: #fbbf24;
-            padding: 10px 20px; border-bottom: 2px solid #fbbf24;
-            font-weight: bold; display: none; z-index: 2000; font-family: 'Cinzel', serif;
+            position: absolute; top: 12%; left: 50%; transform: translateX(-50%);
+            background: rgba(244, 201, 93, 0.95); color: #1b1b24;
+            padding: 10px 24px; border-radius: 999px;
+            font-weight: bold; display: none; z-index: 2000;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.35);
         }
 
         .inv-row { padding: 8px; border-bottom: 1px solid #333; cursor: pointer; display: flex; align-items: center; }
@@ -229,10 +262,11 @@
     <div id="fear-talisman" class="entity item-obj decoy" style="left: 250px; top: 460px;">🪬</div>
     <div id="loop-door" class="loop-door"></div>
 
-    <!-- NPC Hegel -->
+    <!-- NPC G.W.F. Hegel -->
     <div id="hegel" class="entity" style="left: 600px; top: 200px;">
-        <div class="char-name">Hegel</div>
+        <div class="char-name-tag">G.W.F. Hegel</div>
         <div class="char-container">
+            <div class="hair-hegel"></div>
             <div class="char-head"></div>
             <div class="char-body">
                 <div class="char-arm arm-left"></div><div class="char-arm arm-right"></div>
@@ -243,7 +277,7 @@
 
     <!-- Player -->
     <div id="player" class="entity" style="left: 400px; top: 500px;">
-        <div class="char-name">Bạn</div>
+        <div class="char-name-tag">Lữ Khách</div>
         <div id="player-model" class="char-container">
             <div class="char-head"></div>
             <div class="char-body">
@@ -259,7 +293,7 @@
     <div id="flash-msg"></div>
 
     <div id="dialog-box" class="ui-panel" style="top: auto; bottom: 20px; transform: translateX(-50%); width: 700px;">
-        <h3 id="dialog-name" class="font-bold text-yellow-500 mb-2 font-serif">Hegel</h3>
+        <h3 id="dialog-name" class="font-bold text-yellow-500 mb-2 font-serif">G.W.F. Hegel</h3>
         <p id="dialog-text" class="italic text-gray-300">...</p>
         <p class="text-xs text-gray-500 mt-4 text-right">[F] Tiếp tục</p>
     </div>
@@ -315,7 +349,7 @@
             cloakFoundTruth: false
         },
         objs: [
-            { id: 'hegel', x: 600, y: 200, name: 'Hegel' },
+            { id: 'hegel', x: 600, y: 200, name: 'G.W.F. Hegel' },
             { id: 'rack', x: 100, y: 200, name: 'Giá Áo' },
             { id: 'mirror', x: 150, y: 200, name: 'Gương Soi' },
             { id: 'clock-base', x: 700, y: 500, name: 'Cỗ Máy Thời Gian' },
@@ -475,7 +509,7 @@
         if (!target) return;
 
         if (target.id === 'hegel') {
-            showDialog("Hegel", hegelDialogues[dialogIdx]);
+            showDialog("G.W.F. Hegel", hegelDialogues[dialogIdx]);
             if (dialogIdx < hegelDialogues.length - 1) dialogIdx++;
         }
         else if (target.id === 'rack') {
