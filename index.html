@@ -377,6 +377,7 @@
         const SUPABASE_URL = 'https://ttloqljdsfkkrkzsuzwgz.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0bG9xbGpkc2Zrcmt6c3V6d2d6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMzIzMjQsImV4cCI6MjA4NTcwODMyNH0.-AgPKBKeB_XWH6D8cThH5Iy2EBoYRnrF8NkhgK5Qy5g';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const SUPABASE_TABLES = ['leaderboard', 'leaderboards'];
 
         function formatDuration(ms) {
             const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -387,6 +388,33 @@
             return `${m}m ${String(s).padStart(2, '0')}s`;
         }
 
+        async function fetchLeaderboardRows() {
+            let lastError = null;
+            for (const table of SUPABASE_TABLES) {
+                const { data, error } = await supabaseClient
+                    .from(table)
+                    .select('*')
+                    .limit(50);
+                if (!error) return { data, table };
+                lastError = error;
+            }
+            return { data: null, error: lastError };
+        }
+
+        function getEntryTimeMs(entry) {
+            const raw = entry.time_ms ?? entry.timeMs ?? entry.time ?? entry.duration ?? entry.elapsed ?? 0;
+            const value = Number(raw);
+            return Number.isFinite(value) ? value : 0;
+        }
+
+        function getEntryCreatedAt(entry) {
+            return entry.created_at ?? entry.createdAt ?? '';
+        }
+
+        function getEntryName(entry) {
+            return entry.name ?? entry.player_name ?? entry.playerName ?? 'Lữ Khách';
+        }
+
         async function renderLeaderboard() {
             const list = document.getElementById('leaderboard-list');
             const empty = document.getElementById('leaderboard-empty');
@@ -394,12 +422,7 @@
             empty.textContent = 'Đang tải bảng xếp hạng...';
             empty.classList.remove('hidden');
 
-            const { data, error } = await supabaseClient
-                .from('leaderboard')
-                .select('name,time_ms,created_at')
-                .order('time_ms', { ascending: true })
-                .order('created_at', { ascending: true })
-                .limit(10);
+            const { data, error } = await fetchLeaderboardRows();
 
             if (error) {
                 console.warn('Leaderboard fetch failed', error);
@@ -413,6 +436,11 @@
                 empty.classList.remove('hidden');
                 return;
             }
+            entries.sort((a, b) => {
+                const diff = getEntryTimeMs(a) - getEntryTimeMs(b);
+                if (diff !== 0) return diff;
+                return String(getEntryCreatedAt(a)).localeCompare(String(getEntryCreatedAt(b)));
+            });
             empty.classList.add('hidden');
             entries.slice(0, 10).forEach((entry, idx) => {
                 const row = document.createElement('div');
@@ -424,11 +452,11 @@
 
                 const name = document.createElement('span');
                 name.className = 'leader-name';
-                name.textContent = entry.name || 'Lữ Khách';
+                name.textContent = getEntryName(entry);
 
                 const time = document.createElement('span');
                 time.className = 'leader-time';
-                time.textContent = formatDuration(entry.timeMs || 0);
+                time.textContent = formatDuration(getEntryTimeMs(entry));
 
                 row.appendChild(rank);
                 row.appendChild(name);

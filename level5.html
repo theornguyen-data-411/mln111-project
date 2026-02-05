@@ -353,6 +353,7 @@
     const SUPABASE_URL = 'https://ttloqljdsfkkrkzsuzwgz.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0bG9xbGpkc2Zrcmt6c3V6d2d6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMzIzMjQsImV4cCI6MjA4NTcwODMyNH0.-AgPKBKeB_XWH6D8cThH5Iy2EBoYRnrF8NkhgK5Qy5g';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const SUPABASE_TABLES = ['leaderboard', 'leaderboards'];
     const CONFIG = { speed: 2.2, interactDist: 70 };
     let flashTimeout;
 
@@ -416,14 +417,29 @@
     }
 
     async function submitLeaderboardEntry(name, timeMs) {
-        try {
-            const { error } = await supabaseClient
-                .from('leaderboard')
-                .insert({ name, time_ms: Math.round(timeMs) });
-            if (error) console.warn('Leaderboard insert failed', error);
-        } catch (err) {
-            console.warn('Leaderboard insert failed', err);
+        const timeValue = Math.round(timeMs);
+        const payloads = [
+            { name, time_ms: timeValue },
+            { name, timeMs: timeValue },
+            { player_name: name, time_ms: timeValue },
+            { player_name: name, timeMs: timeValue },
+            { playerName: name, time_ms: timeValue },
+            { playerName: name, timeMs: timeValue }
+        ];
+
+        for (const table of SUPABASE_TABLES) {
+            for (const payload of payloads) {
+                try {
+                    const { error } = await supabaseClient
+                        .from(table)
+                        .insert(payload);
+                    if (!error) return;
+                } catch (err) {
+                    console.warn('Leaderboard insert failed', err);
+                }
+            }
         }
+        showFlash("Không thể lưu thành tích. Vui lòng kiểm tra Supabase.");
     }
 
     function finalizeRun() {
