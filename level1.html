@@ -440,6 +440,8 @@
 
 <script>
     const CONFIG = { speed: 1.2, interactDist: 75 };
+    const NAME_KEY = 'mln11PlayerName';
+    const RUN_START_KEY = 'mln11RunStart';
 
     const INITIAL_STATE = {
         player: { 
@@ -484,6 +486,27 @@
     let obstacles = [];
     let playerEl, playerSpriteEl, dialogBox, dialogText, cabinetUI, cabinetList, invUI, invSlots, flashMsg, portalEl, pedestalEl, gameOverScreen, interactPromptEl, cabinetDescEl;
 
+    function getPlayerName() {
+        const raw = localStorage.getItem(NAME_KEY);
+        if (!raw) return "";
+        const name = raw.trim();
+        return name.length ? name : "";
+    }
+
+    function applyPlayerName() {
+        const name = getPlayerName();
+        if (!name) return;
+        const tag = document.querySelector('#player .char-name-tag');
+        if (tag) tag.textContent = name;
+    }
+
+    function ensureRunStart() {
+        const current = Number(localStorage.getItem(RUN_START_KEY) || '0');
+        if (!current) {
+            localStorage.setItem(RUN_START_KEY, String(Date.now()));
+        }
+    }
+
     function init() {
         playerEl = document.getElementById('player');
         playerSpriteEl = document.getElementById('player-sprite');
@@ -500,6 +523,9 @@
         gameOverScreen = document.getElementById('game-over-screen');
         interactPromptEl = document.getElementById('interact-prompt');
         const invButton = document.getElementById('inv-button');
+
+        applyPlayerName();
+        ensureRunStart();
         
         obstacles = state.interactables.map(o => {
             if(o.id.startsWith('note')) return null; // Skip notes, walk over them

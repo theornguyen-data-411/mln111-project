@@ -387,7 +387,7 @@
             Bạn đã phủ định chính mình để tìm thấy bản ngã.<br>
             Cánh cửa sự thật đã mở."
         </p>
-        <button onclick="location.href='index.html'" class="px-8 py-3 border border-white text-white hover:bg-white hover:text-black transition duration-300 font-serif">VỀ MENU [F]</button>
+        <button onclick="location.href='level5.html'" class="px-8 py-3 border border-white text-white hover:bg-white hover:text-black transition duration-300 font-serif">QUA MÀN [F]</button>
     </div>
 </div>
 
@@ -395,6 +395,7 @@
     const DEBUG_UNLOCK_LEVEL4 = false;
     const progress = Number(localStorage.getItem('mln11Progress') || '0');
     if (!DEBUG_UNLOCK_LEVEL4 && progress < 3) window.location.href = 'index.html';
+    const NAME_KEY = 'mln11PlayerName';
     /* --- CONFIG & STATE --- */
     const CONFIG = { speed: 3, interactDist: 70 };
     
@@ -452,6 +453,15 @@
     // DOM Elements
     let playerEl, playerModel, doorEl, promptEl, dialogEl, invEl;
 
+    function applyPlayerName() {
+        const raw = localStorage.getItem(NAME_KEY);
+        if (!raw) return;
+        const name = raw.trim();
+        if (!name) return;
+        const tag = document.querySelector('#player .char-name-tag');
+        if (tag) tag.textContent = name;
+    }
+
     /* --- INITIALIZATION --- */
     function init() {
         playerEl = document.getElementById('player');
@@ -462,6 +472,7 @@
         invEl = document.getElementById('inventory-ui');
         const invUseBtn = document.getElementById('inv-use');
         const invButton = document.getElementById('inv-button');
+        applyPlayerName();
         if (invUseBtn) invUseBtn.addEventListener('click', useItem);
         if (invButton) {
             invButton.addEventListener('click', () => {
@@ -486,7 +497,7 @@
     /* --- INPUT HANDLING --- */
     function handleInput(code) {
         if (STATE.uiState === 'GAMEOVER') {
-            if (code === 'KeyF') window.location.href = 'index.html';
+            if (code === 'KeyF') window.location.href = 'level5.html';
             return;
         }
         if (STATE.uiState === 'DIALOG') {

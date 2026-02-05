@@ -814,6 +814,7 @@
     <script>
         const progress = Number(localStorage.getItem('mln11Progress') || '0');
         if (progress < 2) window.location.href = 'index.html';
+        const NAME_KEY = 'mln11PlayerName';
         const CONFIG = { speed: 2.5, interactDist: 60 };
         let flashTimeout;
 
@@ -872,6 +873,15 @@
 
         let playerEl, container, dialogEl, invEl, promptEl, telescopeEl, sunEl, sunNumberEl;
 
+        function applyPlayerName() {
+            const raw = localStorage.getItem(NAME_KEY);
+            if (!raw) return;
+            const name = raw.trim();
+            if (!name) return;
+            const tag = document.querySelector('#player .char-name-tag');
+            if (tag) tag.textContent = name;
+        }
+
         function init() {
             playerEl = document.getElementById('player');
             container = document.getElementById('player').querySelector('.char-container');
@@ -882,6 +892,8 @@
             sunEl = document.getElementById('sun');
             sunNumberEl = document.getElementById('sun-number');
             const invButton = document.getElementById('inv-button');
+
+            applyPlayerName();
 
             updateTelescopePosition(STATE.telescope.x, STATE.telescope.y);
 

@@ -340,11 +340,16 @@
             và thành phẩm là kết tinh cuối cùng. Khi tư liệu và sản phẩm chi phối con người, sự tha hóa xuất hiện;
             chỉ khi hiểu mối liên hệ ấy, bạn mới thấy được con đường giải phóng.
         </p>
-        <p class="text-xl text-gray-500 tracking-widest animate-pulse">ẤN PHÍM [F] ĐỂ QUA MÀN TIẾP THEO</p>
+        <p class="text-xl text-gray-500 tracking-widest animate-pulse">ẤN PHÍM [F] ĐỂ VỀ MENU</p>
     </div>
 </div>
 
 <script>
+    const progress = Number(localStorage.getItem('mln11Progress') || '0');
+    if (progress < 4) window.location.href = 'index.html';
+    const NAME_KEY = 'mln11PlayerName';
+    const RUN_START_KEY = 'mln11RunStart';
+    const LEADERBOARD_KEY = 'mln11Leaderboard';
     const CONFIG = { speed: 2.2, interactDist: 70 };
     let flashTimeout;
 
@@ -363,7 +368,8 @@
             ironInBucket: false,
             hasHammer: false,
             terminalReady: false,
-            gateUnlocked: false
+            gateUnlocked: false,
+            runRecorded: false
         },
         items: [
             { id: 'marx', x: 650, y: 150, type: 'npc', name: 'Karl Marx' },
@@ -392,6 +398,59 @@
     const keys = {};
     let playerEl, spriteEl, promptEl, dialogBox, invUI, terminalUI, flashEl;
 
+    function getPlayerName() {
+        const raw = localStorage.getItem(NAME_KEY);
+        if (!raw) return "";
+        const name = raw.trim();
+        return name.length ? name : "";
+    }
+
+    function applyPlayerName() {
+        const name = getPlayerName();
+        if (!name) return;
+        const tag = document.querySelector('#player .char-name-tag');
+        if (tag) tag.textContent = name;
+    }
+
+    function loadLeaderboard() {
+        try {
+            const raw = localStorage.getItem(LEADERBOARD_KEY);
+            const parsed = raw ? JSON.parse(raw) : [];
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (err) {
+            return [];
+        }
+    }
+
+    function saveLeaderboard(entries) {
+        localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(entries));
+    }
+
+    function addLeaderboardEntry(name, timeMs) {
+        const entries = loadLeaderboard();
+        entries.push({
+            name,
+            timeMs,
+            finishedAt: new Date().toISOString()
+        });
+        entries.sort((a, b) => a.timeMs - b.timeMs);
+        saveLeaderboard(entries.slice(0, 10));
+    }
+
+    function finalizeRun() {
+        if (STATE.flags.runRecorded) return;
+        STATE.flags.runRecorded = true;
+        const startRaw = localStorage.getItem(RUN_START_KEY);
+        const start = startRaw ? Number(startRaw) : 0;
+        if (Number.isFinite(start) && start > 0) {
+            const elapsed = Math.max(0, Date.now() - start);
+            const name = getPlayerName() || "Lữ Khách";
+            addLeaderboardEntry(name, elapsed);
+        }
+        localStorage.removeItem(RUN_START_KEY);
+        localStorage.setItem('mln11Progress', '5');
+    }
+
     function init() {
         playerEl = document.getElementById('player');
         spriteEl = document.getElementById('player-sprite');
@@ -401,6 +460,7 @@
         terminalUI = document.getElementById('terminal-display');
         flashEl = document.getElementById('flash-msg');
         const invButton = document.getElementById('inv-button');
+        applyPlayerName();
 
         document.getElementById('game-container').focus();
 
@@ -479,7 +539,7 @@
         }
 
         if (STATE.uiState === 'CONCLUSION') {
-            if (e.code === 'KeyF') location.reload();
+            if (e.code === 'KeyF') window.location.href = 'index.html';
             return;
         }
 
@@ -549,6 +609,7 @@
 
             case 'exit':
                 if (STATE.flags.gateUnlocked) {
+                    finalizeRun();
                     STATE.uiState = 'CONCLUSION';
                     document.getElementById('conclusion-screen').style.display = 'flex';
                 } else showFlash("Xiềng xích của hệ thống vẫn còn đó.");

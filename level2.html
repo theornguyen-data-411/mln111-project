@@ -415,6 +415,7 @@ background: linear-gradient(to right, #5d4037, #3e2723);
 <script>
     const progress = Number(localStorage.getItem('mln11Progress') || '0');
     if (progress < 1) window.location.href = 'index.html';
+    const NAME_KEY = 'mln11PlayerName';
     const CONFIG = { speed: 1.5, interactDist: 65 };
     let flashTimeout;
 
@@ -453,6 +454,15 @@ background: linear-gradient(to right, #5d4037, #3e2723);
     let obstacles = [];
     let playerEl, playerSpriteEl, dialogBox, dialogText, invUI, invSlots, flashMsg, interactPromptEl, spotlightEl, noteViewEl, keypadUI, keypadDisplay, gameOverScreen;
 
+    function applyPlayerName() {
+        const raw = localStorage.getItem(NAME_KEY);
+        if (!raw) return;
+        const name = raw.trim();
+        if (!name) return;
+        const tag = document.querySelector('#player .char-name-tag');
+        if (tag) tag.textContent = name;
+    }
+
     function init() {
         playerEl = document.getElementById('player');
         playerSpriteEl = document.getElementById('player-sprite');
@@ -468,6 +478,8 @@ background: linear-gradient(to right, #5d4037, #3e2723);
         keypadDisplay = document.getElementById('keypad-display');
         gameOverScreen = document.getElementById('game-over-screen');
         const invButton = document.getElementById('inv-button');
+
+        applyPlayerName();
 
         refreshObstacles();
 
