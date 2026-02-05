@@ -213,6 +213,96 @@
             border-color: rgba(255, 255, 255, 0.08);
         }
 
+        .howto-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .howto-toggle {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .howto-toggle:hover {
+            background: rgba(139, 211, 255, 0.12);
+            border-color: rgba(139, 211, 255, 0.4);
+        }
+
+        .keycap {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.06);
+            font-family: 'Unbounded', sans-serif;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            color: #e6edf5;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 5, 12, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 4000;
+            padding: 24px;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        .modal-card {
+            width: min(640px, 92vw);
+            background: rgba(10, 12, 24, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 22px 24px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-family: 'Unbounded', sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 13px;
+            color: rgba(244, 201, 93, 0.85);
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .modal-close:hover {
+            background: rgba(139, 211, 255, 0.12);
+            border-color: rgba(139, 211, 255, 0.4);
+        }
+
         .footer {
             margin-top: auto;
             font-size: 12px;
@@ -268,19 +358,40 @@
                     <a class="btn ghost level-link locked" data-level="2" data-href="level2.html" href="#" aria-disabled="true">Màn 2<span class="lock">🔒</span></a>
                     <a class="btn ghost level-link locked" data-level="3" data-href="level3.html" href="#" aria-disabled="true">Màn 3<span class="lock">🔒</span></a>
                     <a class="btn ghost level-link locked" data-level="4" data-href="level4.html" href="#" aria-disabled="true">Màn 4<span class="lock">🔒</span></a>
+                    <a class="btn ghost level-link locked" data-level="5" data-href="level5.html" href="#" aria-disabled="true">Màn 5<span class="lock">🔒</span></a>
                 </div>
             </div>
+
+            <button class="btn howto-toggle" id="howto-toggle" type="button">Hướng dẫn chơi</button>
 
             <div class="footer">Nhấn <span>Enter</span> để bắt đầu</div>
         </main>
     </div>
 
+    <div class="modal-backdrop" id="howto-modal" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="howto-title">
+            <div class="modal-header">
+                <h2 class="modal-title" id="howto-title">Hướng dẫn nhanh</h2>
+                <button class="modal-close" id="howto-close" type="button">Đóng</button>
+            </div>
+            <ul class="howto-list">
+                <li>Di chuyển: <span class="keycap">WASD</span> hoặc <span class="keycap">↑↓←→</span></li>
+                <li>Tương tác/tiếp tục: <span class="keycap">F</span></li>
+                <li>Hành trang: <span class="keycap">I</span> hoặc nút “Hành Trang”</li>
+                <li>Đóng bảng/thoát: <span class="keycap">ESC</span></li>
+            </ul>
+        </div>
+    </div>
+
     <script>
         const DEBUG_UNLOCK_LEVEL4 = true;
+        const DEBUG_UNLOCK_LEVEL5 = true;
         const progress = Number(localStorage.getItem('mln11Progress') || '0');
         document.querySelectorAll('.level-link').forEach((link) => {
             const level = Number(link.dataset.level || '0');
-            const unlocked = level === 4 ? (DEBUG_UNLOCK_LEVEL4 || progress >= 3) : (progress >= (level - 1));
+        const unlocked = level === 4
+            ? (DEBUG_UNLOCK_LEVEL4 || progress >= 3)
+            : (level === 5 ? (DEBUG_UNLOCK_LEVEL5 || progress >= 4) : (progress >= (level - 1)));
             link.classList.toggle('locked', !unlocked);
             if (unlocked) {
                 link.setAttribute('href', link.dataset.href);
@@ -295,6 +406,28 @@
             const locked = e.target.closest('.level-link.locked');
             if (locked) e.preventDefault();
         });
+
+        const howtoToggle = document.getElementById('howto-toggle');
+        const howtoModal = document.getElementById('howto-modal');
+        const howtoClose = document.getElementById('howto-close');
+        if (howtoToggle && howtoModal) {
+            const openHowto = () => {
+                howtoModal.classList.add('open');
+                howtoModal.setAttribute('aria-hidden', 'false');
+            };
+            const closeHowto = () => {
+                howtoModal.classList.remove('open');
+                howtoModal.setAttribute('aria-hidden', 'true');
+            };
+            howtoToggle.addEventListener('click', openHowto);
+            if (howtoClose) howtoClose.addEventListener('click', closeHowto);
+            howtoModal.addEventListener('click', (e) => {
+                if (e.target === howtoModal) closeHowto();
+            });
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeHowto();
+            });
+        }
 
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {

@@ -250,6 +250,79 @@ background: linear-gradient(to right, #5d4037, #3e2723);
         #keypad-ui { display: none; top: 30%; left: 50%; transform: translate(-50%, -50%); width: 250px; text-align: center; }
         #keypad-display { background: #000; padding: 10px; font-family: monospace; font-size: 24px; color: #0f0; margin-bottom: 10px; border: 1px solid #333; }
 
+        /* --- Cinematic skin (manual, non-AI look) --- */
+        #game-container {
+            border-color: rgba(214, 178, 94, 0.35);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.65);
+        }
+        #game-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            box-shadow: inset 0 0 90px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.04);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        #interact-prompt {
+            background: linear-gradient(135deg, #f1d07a, #d6b25e);
+            border: 1px solid rgba(0,0,0,0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-size: 12px;
+        }
+
+        .ui-panel {
+            background: rgba(12, 14, 22, 0.94);
+            border: 1px solid rgba(214, 178, 94, 0.25);
+            box-shadow: 0 18px 45px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.03);
+            background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+        }
+
+        #flash-msg {
+            background: rgba(214, 178, 94, 0.95);
+            border: 1px solid rgba(0,0,0,0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 14px;
+            color: #1b1b24;
+        }
+
+        #inv-button {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 2100;
+            background: rgba(12, 14, 22, 0.9);
+            color: #f1d07a;
+            border: 1px solid rgba(214, 178, 94, 0.35);
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        #inv-button:hover { background: rgba(214, 178, 94, 0.15); }
+        #inv-button:active { transform: translateY(1px); }
+
+        #dialog-name,
+        #inventory-ui h2,
+        #keypad-ui h3,
+        #end-title,
+        #game-over-screen h1 {
+            font-family: 'Unbounded', sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #f1d07a;
+        }
+
+        .inv-item-row { border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .inv-item-row.selected { background: rgba(214, 178, 94, 0.12); border-left: 4px solid #d6b25e; }
     </style>
 </head>
 <body>
@@ -300,6 +373,7 @@ background: linear-gradient(to right, #5d4037, #3e2723);
     <!-- UI -->
     <div id="ui-layer" style="z-index: 2000;">
         <div id="flash-msg">THÔNG BÁO</div>
+        <button id="inv-button" type="button">Hành Trang [I]</button>
         <div id="dialog-box" class="ui-panel bottom-10 left-1/2 -translate-x-1/2 w-[90%] hidden">
             <div id="dialog-name" class="font-bold text-orange-400 mb-1 text-2xl">...</div>
             <div id="dialog-text" class="text-gray-200 italic text-xl">...</div>
@@ -354,7 +428,8 @@ background: linear-gradient(to right, #5d4037, #3e2723);
         flags: { 
             orbWhiteTaken: false, orbBlackTaken: false, noteTaken: false, 
             orbBroken: false, doorUnlockedKey: false, doorUnlockedFinal: false,
-            orbSecretNotified: false
+            orbSecretNotified: false,
+            win: false
         },
         interactables: [
             { id: 'hegel', x: 380, y: 350, w: 40, h: 60, type: 'npc' },
@@ -392,10 +467,22 @@ background: linear-gradient(to right, #5d4037, #3e2723);
         keypadUI = document.getElementById('keypad-ui');
         keypadDisplay = document.getElementById('keypad-display');
         gameOverScreen = document.getElementById('game-over-screen');
+        const invButton = document.getElementById('inv-button');
 
         refreshObstacles();
 
-        window.addEventListener('keydown', e => { keys[e.code]=true; handleInput(e); });
+        if (invButton) {
+            invButton.addEventListener('click', () => {
+                if (state.gameState === 'PLAYING') openInventory();
+                else if (state.gameState === 'INVENTORY') closeInventory();
+            });
+        }
+
+        window.addEventListener('keydown', e => { 
+            if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) e.preventDefault();
+            keys[e.code]=true; 
+            handleInput(e); 
+        });
         window.addEventListener('keyup', e => { keys[e.code]=false; });
         requestAnimationFrame(gameLoop);
     }
@@ -408,7 +495,10 @@ background: linear-gradient(to right, #5d4037, #3e2723);
 
     function handleInput(e) {
         if(state.gameState === 'GAMEOVER') {
-            if(e.code === 'KeyF') window.location.reload();
+            if(e.code === 'KeyF') {
+                if (state.flags.win) window.location.href = 'level3.html';
+                else window.location.reload();
+            }
             return;
         }
 
@@ -443,8 +533,8 @@ background: linear-gradient(to right, #5d4037, #3e2723);
             else closeInventory();
         }
         if(state.gameState === 'INVENTORY') {
-            if(e.code === 'KeyW') { state.previewItemIndex = Math.max(0, state.previewItemIndex - 1); updateInventoryUI(); }
-            if(e.code === 'KeyS') { state.previewItemIndex = Math.min(state.inventory.length - 1, state.previewItemIndex + 1); updateInventoryUI(); }
+            if(e.code === 'KeyW' || e.code === 'ArrowUp') { state.previewItemIndex = Math.max(0, state.previewItemIndex - 1); updateInventoryUI(); }
+            if(e.code === 'KeyS' || e.code === 'ArrowDown') { state.previewItemIndex = Math.min(state.inventory.length - 1, state.previewItemIndex + 1); updateInventoryUI(); }
         }
         if(e.code === 'Escape') { 
             closeInventory(); 
@@ -611,6 +701,7 @@ showFlash("XOẢNG! Quả cầu vỡ tan, bạn nhặt được chìa khóa.");
 
     function finishGame(win) {
         state.gameState='GAMEOVER'; gameOverScreen.classList.remove('hidden');
+        state.flags.win = win;
         if(win) { 
             setProgress(2);
             document.getElementById('end-title').textContent="BIỆN CHỨNG"; 
@@ -623,9 +714,10 @@ showFlash("XOẢNG! Quả cầu vỡ tan, bạn nhặt được chìa khóa.");
     function gameLoop() {
         if(state.gameState === 'PLAYING') {
             let dx = 0, dy = 0;
-            if(keys['KeyW']) dy -= CONFIG.speed; if(keys['KeyS']) dy += CONFIG.speed;
-            if(keys['KeyA']) { dx -= CONFIG.speed; playerSpriteEl.style.transform = 'scaleX(-1)'; }
-            if(keys['KeyD']) { dx += CONFIG.speed; playerSpriteEl.style.transform = 'scaleX(1)'; }
+            if(keys['KeyW'] || keys['ArrowUp']) dy -= CONFIG.speed; 
+            if(keys['KeyS'] || keys['ArrowDown']) dy += CONFIG.speed;
+            if(keys['KeyA'] || keys['ArrowLeft']) { dx -= CONFIG.speed; playerSpriteEl.style.transform = 'scaleX(-1)'; }
+            if(keys['KeyD'] || keys['ArrowRight']) { dx += CONFIG.speed; playerSpriteEl.style.transform = 'scaleX(1)'; }
             const nX = state.player.x + dx; const nY = state.player.y + dy;
             if(!isColliding(nX, nY)) { state.player.x = nX; state.player.y = nY; }
             if(dx !== 0 || dy !== 0) playerSpriteEl.classList.add('walking'); else playerSpriteEl.classList.remove('walking');

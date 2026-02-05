@@ -284,9 +284,14 @@
             transition: opacity 0.3s ease;
         }
 
-        .sun-obj.show-number .sun-number {
+        .sun-fake {
             opacity: 1;
+            color: rgba(91, 57, 12, 0.9);
+            text-shadow: 0 0 8px rgba(255, 168, 0, 0.35);
         }
+
+        .sun-obj.revealed .sun-number { opacity: 1; }
+        .sun-obj.revealed .sun-fake { opacity: 0; }
 
         @keyframes sun-pulse {
             from {
@@ -545,7 +550,13 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 300px;
-            height: 300px;
+            min-height: 300px;
+            height: auto;
+            max-height: 360px;
+            padding: 18px 16px;
+            box-sizing: border-box;
+            text-align: center;
+            gap: 8px;
             background: #fff8e1;
             color: #3e2723;
             border: 8px solid #8d6e63;
@@ -554,14 +565,19 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
         .infinity-symbol {
-            font-size: 100px;
+            font-size: 88px;
             font-weight: bold;
             font-family: sans-serif;
             color: #3e2723;
+            line-height: 1;
         }
+
+        #note-view h3 { margin: 0; font-size: 16px; }
+        #note-view p { margin: 4px 0; font-size: 12px; line-height: 1.4; }
 
         #keypad-ui {
             display: none;
@@ -581,7 +597,84 @@
             border: 1px solid #333;
             margin-bottom: 10px;
             letter-spacing: 5px;
+            white-space: nowrap;
+            display: inline-block;
+            min-width: 140px;
+            text-align: center;
         }
+
+        /* --- Cinematic skin (manual, non-AI look) --- */
+        #game-container {
+            border-color: rgba(214, 178, 94, 0.35);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.65);
+        }
+        #game-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            box-shadow: inset 0 0 90px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.04);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        #interact-prompt {
+            background: linear-gradient(135deg, #f1d07a, #d6b25e);
+            border: 1px solid rgba(0,0,0,0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-size: 12px;
+        }
+
+        .ui-panel {
+            background: rgba(12, 14, 22, 0.94);
+            border: 1px solid rgba(214, 178, 94, 0.25);
+            box-shadow: 0 18px 45px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.03);
+            background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+        }
+
+        #flash-msg {
+            background: rgba(214, 178, 94, 0.95);
+            border: 1px solid rgba(0,0,0,0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 14px;
+            color: #1b1b24;
+        }
+
+        #inv-button {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 2100;
+            background: rgba(12, 14, 22, 0.9);
+            color: #f1d07a;
+            border: 1px solid rgba(214, 178, 94, 0.35);
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        #inv-button:hover { background: rgba(214, 178, 94, 0.15); }
+        #inv-button:active { transform: translateY(1px); }
+
+        #dialog-name,
+        #inventory-ui h2,
+        #keypad-ui h3,
+        #end-screen h1 {
+            font-family: 'Unbounded', sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #f1d07a;
+        }
+
+        .inv-item-row { border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .inv-item-row.selected { background: rgba(214, 178, 94, 0.12); border-left: 4px solid #d6b25e; }
     </style>
 </head>
 
@@ -596,6 +689,7 @@
 
             <!-- Visual Sun (In the sky) -->
             <div id="sun" class="entity sun-obj" style="left: 100px; top: 80px;">
+                <span class="sun-number sun-fake">3</span>
                 <span id="sun-number" class="sun-number"></span>
             </div>
 
@@ -621,6 +715,10 @@
                 <div class="scrap" style="transform: rotate(10deg); left: 0;"></div>
                 <div class="scrap" style="transform: rotate(-20deg); left: 10px;"></div>
                 <div class="scrap" style="transform: rotate(45deg); left: 5px; top: -5px;"></div>
+            </div>
+            <div id="fake-paper" class="entity paper-pile decoy" style="left: 520px; top: 520px;">
+                <div class="scrap" style="transform: rotate(-15deg); left: 0;"></div>
+                <div class="scrap" style="transform: rotate(20deg); left: 10px;"></div>
             </div>
 
             <!-- Screwdriver -->
@@ -669,6 +767,7 @@
         <!-- UI Layers -->
         <div id="ui-layer" style="z-index: 2000;">
             <div id="flash-msg">THÔNG BÁO</div>
+            <button id="inv-button" type="button">Hành Trang [I]</button>
 
             <!-- Dialog -->
             <div id="dialog-box" class="ui-panel bottom-10 left-1/2 -translate-x-1/2 w-[90%] hidden">
@@ -706,9 +805,8 @@
                 <h1 class="text-5xl font-bold text-white mb-6">CHÂN LÝ ĐƯỢC KHAI PHÁ</h1>
                 <p class="text-gray-400 text-center max-w-md italic mb-8">"Bạn đã nhìn thấy ánh sáng bên ngoài cái hang
                     của nhận thức. Sự thật không phải lúc nào cũng như vẻ bề ngoài."</p>
-                <button onclick="location.reload()"
-                    class="px-6 py-2 border border-white text-white hover:bg-white hover:text-black transition">Chơi
-                    Lại</button>
+                <button onclick="location.href='level4.html'"
+                    class="px-6 py-2 border border-white text-white hover:bg-white hover:text-black transition">Qua Màn [F]</button>
             </div>
         </div>
     </div>
@@ -727,6 +825,7 @@
             flags: {
                 hasScrewdriver: false,
                 hasPaper: false,
+                hasFakePaper: false,
                 compassOpened: false,
                 mirrorBroken: false,
                 doorUnlocked: false,
@@ -743,6 +842,7 @@
                 { id: 'compass', x: 600, y: 450, w: 40, h: 40, type: 'obj', name: 'La bàn lệch' },
                 { id: 'mirror', x: 750, y: 400, w: 10, h: 80, type: 'obj', name: 'Gương 2 chiều' },
                 { id: 'paper', x: 350, y: 500, w: 30, h: 20, type: 'pickup', name: 'Mảnh giấy vụn' },
+                { id: 'fake-paper', x: 520, y: 520, w: 30, h: 20, type: 'pickup', name: 'Mảnh giấy nhòe' },
                 { id: 'screwdriver', x: 150, y: 450, w: 30, h: 30, type: 'pickup', name: 'Tô vít' },
                 { id: 'sun-filter', x: 520, y: 520, w: 30, h: 30, type: 'pickup', name: 'Tấm lọc ánh sáng' },
                 { id: 'fake-filter', x: 300, y: 460, w: 30, h: 30, type: 'pickup', name: 'Tấm lọc mờ' },
@@ -781,10 +881,18 @@
             telescopeEl = document.getElementById('telescope-visual');
             sunEl = document.getElementById('sun');
             sunNumberEl = document.getElementById('sun-number');
+            const invButton = document.getElementById('inv-button');
 
             updateTelescopePosition(STATE.telescope.x, STATE.telescope.y);
 
             document.getElementById('game-container').focus();
+
+            if (invButton) {
+                invButton.addEventListener('click', () => {
+                    if (STATE.gameState === 'PLAYING') openInventory();
+                    else if (STATE.gameState === 'INVENTORY') closeInventory();
+                });
+            }
 
             window.addEventListener('keydown', e => {
                 if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) > -1) e.preventDefault();
@@ -797,7 +905,10 @@
         }
 
         function handleInput(code) {
-            if (STATE.gameState === 'GAMEOVER') return;
+            if (STATE.gameState === 'GAMEOVER') {
+                if (code === 'KeyF') window.location.href = 'level4.html';
+                return;
+            }
 
             if (STATE.gameState === 'KEYPAD') {
                 if (code === 'Escape') { STATE.gameState = 'PLAYING'; document.getElementById('keypad-ui').style.display = 'none'; STATE.password = ""; return; }
@@ -869,15 +980,23 @@
         function checkInteract() {
             let target = null;
             let minDist = CONFIG.interactDist;
+            let npcTarget = null;
+            let npcDist = CONFIG.interactDist;
             STATE.items.forEach(obj => {
                 if ((obj.id === 'paper' && STATE.flags.hasPaper) ||
+                    (obj.id === 'fake-paper' && STATE.flags.hasFakePaper) ||
                     (obj.id === 'screwdriver' && STATE.flags.hasScrewdriver) ||
                     (obj.id === 'sun-filter' && STATE.flags.hasFilter) ||
                     (obj.id === 'fake-filter' && STATE.flags.hasFakeFilter) ||
                     (obj.id === 'star-map' && STATE.flags.hasStarMap)) return;
                 const d = dist(STATE.player.x, STATE.player.y, obj.x, obj.y);
+                if (obj.id === 'plato') {
+                    if (d < npcDist) { npcDist = d; npcTarget = obj; }
+                    return;
+                }
                 if (d < minDist) { minDist = d; target = obj; }
             });
+            if (!target && npcTarget) target = npcTarget;
             if (target) handleInteraction(target);
         }
 
@@ -897,6 +1016,12 @@
                 document.getElementById('paper').style.display = 'none';
                 showFlash("Nhặt được: MẢNH GIẤY VỤN");
             }
+        else if (obj.id === 'fake-paper') {
+            STATE.flags.hasFakePaper = true;
+            addToInv('fake_scraps', 'Mảnh giấy nhòe', '🧾', 'Chữ nhòe: “4301”.');
+            document.getElementById('fake-paper').style.display = 'none';
+            showDialog("Mảnh giấy nhòe", "Dòng số mờ: “4301”. Nhưng nét chữ quá nhòe để tin tưởng.");
+        }
             else if (obj.id === 'telescope') {
             if (STATE.flags.telescopeCarried) return;
             if (isTelescopeAligned()) {
@@ -941,7 +1066,7 @@
                 else showDialog("La Bàn", "Kim chỉ sai hướng. Có vẻ nắp đậy bị kẹt.");
             }
             else if (obj.id === 'mirror') {
-                if (STATE.flags.mirrorBroken) showDialog("Gương Vỡ", "Đằng sau mảnh vỡ là con số '9'.");
+            if (STATE.flags.mirrorBroken) showDialog("Gương Vỡ", "Phản chiếu ngược hiện số '6'. Hãy đọc ngược để thấy sự thật.");
                 else showDialog("Gương", "Phản chiếu hình ảnh của bạn, nhưng có gì đó không đúng.");
             }
             else if (obj.id === 'door') {
@@ -978,6 +1103,10 @@
                 } else {
                     showFlash("Không có gì để vặn ở đây.");
                 }
+            }
+            else if (item.id === 'fake_scraps') {
+                closeInventory();
+                showDialog("Mảnh giấy nhòe", "Dòng số mờ: “4301”. Có gì đó không đáng tin.");
             }
             else if (item.id === 'sun_filter') {
                 closeInventory();
@@ -1074,7 +1203,7 @@
 
         function revealSunNumber() {
             if (sunNumberEl) sunNumberEl.textContent = '5';
-            if (sunEl) sunEl.classList.add('show-number');
+            if (sunEl) sunEl.classList.add('revealed');
         }
 
         function setProgress(level) {

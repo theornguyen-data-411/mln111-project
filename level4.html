@@ -200,6 +200,78 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.35);
         }
 
+        /* --- Cinematic skin (manual, non-AI look) --- */
+        #game-container {
+            border-color: rgba(214, 178, 94, 0.35);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.65);
+        }
+        #game-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            box-shadow: inset 0 0 90px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.04);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        #interact-prompt {
+            background: linear-gradient(135deg, #f1d07a, #d6b25e);
+            border: 1px solid rgba(0,0,0,0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-size: 12px;
+        }
+
+        .ui-panel {
+            background: rgba(12, 14, 22, 0.94);
+            border: 1px solid rgba(214, 178, 94, 0.25);
+            box-shadow: 0 18px 45px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.03);
+            background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+        }
+
+        #flash-msg {
+            background: rgba(214, 178, 94, 0.95);
+            border: 1px solid rgba(0,0,0,0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 14px;
+            color: #1b1b24;
+        }
+
+        #inv-button {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 2100;
+            background: rgba(12, 14, 22, 0.9);
+            color: #f1d07a;
+            border: 1px solid rgba(214, 178, 94, 0.35);
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        #inv-button:hover { background: rgba(214, 178, 94, 0.15); }
+        #inv-button:active { transform: translateY(1px); }
+
+        #dialog-name,
+        #inventory-ui h2,
+        #end-screen h1 {
+            font-family: 'Unbounded', sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #f1d07a;
+        }
+
+        .inv-row { border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .inv-row.selected { background: rgba(214, 178, 94, 0.12); border-left: 3px solid #d6b25e; }
+
         .inv-row { padding: 8px; border-bottom: 1px solid #333; cursor: pointer; display: flex; align-items: center; }
         .inv-row.selected { background: rgba(255,255,255,0.1); border-left: 3px solid #fbbf24; }
 
@@ -291,6 +363,7 @@
 
     <!-- UI -->
     <div id="flash-msg"></div>
+    <button id="inv-button" type="button">Hành Trang [I]</button>
 
     <div id="dialog-box" class="ui-panel" style="top: auto; bottom: 20px; transform: translateX(-50%); width: 700px;">
         <h3 id="dialog-name" class="font-bold text-yellow-500 mb-2 font-serif">G.W.F. Hegel</h3>
@@ -314,7 +387,7 @@
             Bạn đã phủ định chính mình để tìm thấy bản ngã.<br>
             Cánh cửa sự thật đã mở."
         </p>
-        <button onclick="location.reload()" class="px-8 py-3 border border-white text-white hover:bg-white hover:text-black transition duration-300 font-serif">KHỞI ĐẦU LẠI</button>
+        <button onclick="location.href='index.html'" class="px-8 py-3 border border-white text-white hover:bg-white hover:text-black transition duration-300 font-serif">VỀ MENU [F]</button>
     </div>
 </div>
 
@@ -388,7 +461,15 @@
         dialogEl = document.getElementById('dialog-box');
         invEl = document.getElementById('inventory-ui');
         const invUseBtn = document.getElementById('inv-use');
+        const invButton = document.getElementById('inv-button');
         if (invUseBtn) invUseBtn.addEventListener('click', useItem);
+        if (invButton) {
+            invButton.addEventListener('click', () => {
+                if (STATE.uiState === 'NONE' || STATE.uiState === 'INVENTORY') {
+                    toggleInventory();
+                }
+            });
+        }
 
         document.getElementById('game-container').focus();
 
@@ -404,6 +485,10 @@
 
     /* --- INPUT HANDLING --- */
     function handleInput(code) {
+        if (STATE.uiState === 'GAMEOVER') {
+            if (code === 'KeyF') window.location.href = 'index.html';
+            return;
+        }
         if (STATE.uiState === 'DIALOG') {
             if (code === 'KeyF') {
                 closeDialog();
@@ -596,6 +681,7 @@
 
             if (allSolved) {
                 STATE.flags.doorOpen = true;
+                STATE.uiState = 'GAMEOVER';
                 setProgress(4);
                 document.getElementById('end-screen').classList.remove('hidden');
             } else {
