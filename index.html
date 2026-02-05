@@ -369,11 +369,14 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
     <script>
         const NAME_KEY = 'mln11PlayerName';
         const RUN_START_KEY = 'mln11RunStart';
-        const LEADERBOARD_KEY = 'mln11Leaderboard';
         const PROGRESS_KEY = 'mln11Progress';
+        const SUPABASE_URL = 'https://ttloqljdsfkkrkzsuzwgz.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0bG9xbGpkc2Zrcmt6c3V6d2d6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMzIzMjQsImV4cCI6MjA4NTcwODMyNH0.-AgPKBKeB_XWH6D8cThH5Iy2EBoYRnrF8NkhgK5Qy5g';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         function formatDuration(ms) {
             const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -384,22 +387,29 @@
             return `${m}m ${String(s).padStart(2, '0')}s`;
         }
 
-        function loadLeaderboard() {
-            try {
-                const raw = localStorage.getItem(LEADERBOARD_KEY);
-                const parsed = raw ? JSON.parse(raw) : [];
-                return Array.isArray(parsed) ? parsed : [];
-            } catch (err) {
-                return [];
-            }
-        }
-
-        function renderLeaderboard() {
+        async function renderLeaderboard() {
             const list = document.getElementById('leaderboard-list');
             const empty = document.getElementById('leaderboard-empty');
             list.innerHTML = '';
-            const entries = loadLeaderboard();
+            empty.textContent = 'Đang tải bảng xếp hạng...';
+            empty.classList.remove('hidden');
+
+            const { data, error } = await supabaseClient
+                .from('leaderboard')
+                .select('name,time_ms,created_at')
+                .order('time_ms', { ascending: true })
+                .order('created_at', { ascending: true })
+                .limit(10);
+
+            if (error) {
+                console.warn('Leaderboard fetch failed', error);
+                empty.textContent = 'Không tải được bảng xếp hạng.';
+                return;
+            }
+
+            const entries = Array.isArray(data) ? data : [];
             if (!entries.length) {
+                empty.textContent = 'Chưa có dữ liệu.';
                 empty.classList.remove('hidden');
                 return;
             }
