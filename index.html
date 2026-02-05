@@ -104,6 +104,28 @@
             transform: translateY(1px);
         }
 
+        .back-btn {
+            width: 100%;
+            background: rgba(19, 23, 35, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e5e7eb;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            border-radius: 12px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+        }
+
+        .back-btn:hover {
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
+        }
+
+        .back-btn:active {
+            transform: translateY(1px);
+        }
+
         .leader-row {
             display: flex;
             align-items: center;
@@ -332,6 +354,7 @@
                 <p class="text-gray-400 mt-2 italic">Nhập tên để bắt đầu hành trình.</p>
 
                 <div class="mt-6 space-y-4">
+                    <button id="back-to-legacy" class="back-btn" type="button">Quay lại menu chính</button>
                     <label class="text-sm text-gray-400">Tên người chơi</label>
                     <input id="player-name" class="input-field" type="text" maxlength="20"
                         placeholder="Nhập tên của bạn...">
@@ -490,7 +513,12 @@
             legacyMenu.classList.add('hidden');
             newMenu.classList.remove('hidden');
         }
+        function showLegacyMenu() {
+            newMenu.classList.add('hidden');
+            legacyMenu.classList.remove('hidden');
+        }
         document.getElementById('journey-btn').addEventListener('click', showNewMenu);
+        document.getElementById('back-to-legacy').addEventListener('click', showLegacyMenu);
         window.addEventListener('keydown', (e) => {
             if (legacyMenu.classList.contains('hidden')) return;
             if (e.key === 'Enter') showNewMenu();

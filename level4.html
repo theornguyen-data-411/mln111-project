@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Màn 4 — Huyền Vực Tư Duy</title>
+    <title>Màn 4 — Mê Cung Triết Học</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
     
@@ -200,6 +200,23 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.35);
         }
 
+        #run-timer {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            z-index: 2100;
+            background: rgba(12, 14, 22, 0.9);
+            color: #f1d07a;
+            border: 1px solid rgba(214, 178, 94, 0.35);
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
         /* --- Cinematic skin (manual, non-AI look) --- */
         #game-container {
             border-color: rgba(214, 178, 94, 0.35);
@@ -362,6 +379,7 @@
     <div id="interact-prompt">F</div>
 
     <!-- UI -->
+    <div id="run-timer">00:00</div>
     <div id="flash-msg"></div>
     <button id="inv-button" type="button">Hành Trang [I]</button>
 
@@ -396,6 +414,7 @@
     const progress = Number(localStorage.getItem('mln11Progress') || '0');
     if (!DEBUG_UNLOCK_LEVEL4 && progress < 3) window.location.href = 'index.html';
     const NAME_KEY = 'mln11PlayerName';
+    const RUN_START_KEY = 'mln11RunStart';
     /* --- CONFIG & STATE --- */
     const CONFIG = { speed: 3, interactDist: 70 };
     
@@ -462,6 +481,41 @@
         if (tag) tag.textContent = name;
     }
 
+    function ensureRunStart() {
+        const current = Number(localStorage.getItem(RUN_START_KEY) || '0');
+        if (!current) {
+            localStorage.setItem(RUN_START_KEY, String(Date.now()));
+        }
+    }
+
+    function startRunTimer() {
+        const timerEl = document.getElementById('run-timer');
+        if (!timerEl) return;
+
+        ensureRunStart();
+
+        const tick = () => {
+            const start = Number(localStorage.getItem(RUN_START_KEY) || '0');
+            if (!start) {
+                timerEl.textContent = '00:00';
+                return;
+            }
+            const elapsed = Math.max(0, Date.now() - start);
+            const totalSec = Math.floor(elapsed / 1000);
+            const hours = Math.floor(totalSec / 3600);
+            const minutes = Math.floor((totalSec % 3600) / 60);
+            const seconds = totalSec % 60;
+            if (hours > 0) {
+                timerEl.textContent = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            } else {
+                timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+        };
+
+        tick();
+        setInterval(tick, 1000);
+    }
+
     /* --- INITIALIZATION --- */
     function init() {
         playerEl = document.getElementById('player');
@@ -473,6 +527,7 @@
         const invUseBtn = document.getElementById('inv-use');
         const invButton = document.getElementById('inv-button');
         applyPlayerName();
+        startRunTimer();
         if (invUseBtn) invUseBtn.addEventListener('click', useItem);
         if (invButton) {
             invButton.addEventListener('click', () => {
