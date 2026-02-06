@@ -317,6 +317,501 @@
         }
         
         .invisible { opacity: 0.3; filter: grayscale(100%); }
+
+        /* --- CSS Black Box --- */
+        .black-box-art {
+            position: relative;
+            width: 42px;
+            height: 36px;
+        }
+        .box-body {
+            position: absolute;
+            top: 6px;
+            left: 0;
+            width: 42px;
+            height: 30px;
+            background: linear-gradient(145deg, #1a1a1a 0%, #0a0a0a 60%, #050505 100%);
+            border: 2px solid #2a2a2a;
+            border-radius: 3px;
+            box-shadow:
+                inset 0 0 10px rgba(0,0,0,0.8),
+                0 4px 12px rgba(0,0,0,0.6);
+        }
+        .box-lid {
+            position: absolute;
+            top: 0;
+            left: -2px;
+            width: 46px;
+            height: 10px;
+            background: linear-gradient(180deg, #222 0%, #111 100%);
+            border: 2px solid #2a2a2a;
+            border-radius: 3px 3px 0 0;
+        }
+        .box-lock {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 6px;
+            border: 1.5px solid #444;
+            border-radius: 2px;
+        }
+        .box-lock::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border: 1.5px solid #444;
+            border-radius: 50%;
+            background: transparent;
+        }
+        .box-question {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Unbounded', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            text-shadow: 0 0 6px rgba(80,80,80,0.3);
+            pointer-events: none;
+        }
+        .box-shadow-aura {
+            position: absolute;
+            inset: -6px;
+            background: radial-gradient(ellipse, rgba(0,0,0,0.3), transparent 70%);
+            border-radius: 6px;
+            pointer-events: none;
+        }
+
+        /* --- CSS Clock --- */
+        .clock-art {
+            position: relative;
+            width: 38px;
+            height: 50px;
+        }
+        .clock-body {
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 36px;
+            background: linear-gradient(145deg, #5c4015 0%, #3a2a0e 60%, #2a1b08 100%);
+            border: 2px solid #6b4f10;
+            border-radius: 4px 4px 2px 2px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .clock-top {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18px;
+            height: 10px;
+            background: linear-gradient(180deg, #8b6914, #6b4f10);
+            border-radius: 10px 10px 0 0;
+            border: 2px solid #6b4f10;
+            border-bottom: none;
+        }
+        .clock-top::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 4px;
+            background: #d4a017;
+            border-radius: 3px 3px 0 0;
+        }
+        .clock-face {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #e8dcc8 0%, #c9b896 80%, #a89060 100%);
+            border: 1.5px solid #8b6914;
+            border-radius: 50%;
+            box-shadow: inset 0 0 4px rgba(0,0,0,0.2);
+        }
+        .clock-hand-h, .clock-hand-m {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            background: #2a1b08;
+            border-radius: 1px;
+        }
+        .clock-hand-h {
+            width: 2px;
+            height: 6px;
+            transform: translateX(-50%) rotate(-30deg);
+        }
+        .clock-hand-m {
+            width: 1.5px;
+            height: 8px;
+            transform: translateX(-50%) rotate(90deg);
+        }
+        .clock-center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 3px;
+            height: 3px;
+            background: #2a1b08;
+            border-radius: 50%;
+        }
+        .clock-pendulum {
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 10px;
+            background: #8b6914;
+            transform-origin: top center;
+            animation: pendulum-swing 1.5s ease-in-out infinite alternate;
+        }
+        .clock-pendulum::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, #d4a017, #8b6914);
+            border-radius: 50%;
+            box-shadow: 0 0 4px rgba(212,160,23,0.4);
+        }
+        @keyframes pendulum-swing {
+            from { transform: translateX(-50%) rotate(-15deg); }
+            to { transform: translateX(-50%) rotate(15deg); }
+        }
+        .clock-foot-l, .clock-foot-r {
+            position: absolute;
+            bottom: -2px;
+            width: 6px;
+            height: 4px;
+            background: #3a2a0e;
+            border-radius: 0 0 2px 2px;
+        }
+        .clock-foot-l { left: 6px; }
+        .clock-foot-r { right: 6px; }
+
+        /* --- CSS Gear --- */
+        .gear-art {
+            position: relative;
+            width: 24px;
+            height: 24px;
+        }
+        .gear-body {
+            position: absolute;
+            inset: 3px;
+            background: radial-gradient(circle, #8b8b8b 0%, #5a5a5a 80%);
+            border-radius: 50%;
+            border: 2px solid #777;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+        .gear-body::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 5px;
+            height: 5px;
+            background: #333;
+            border-radius: 50%;
+            border: 1px solid #555;
+        }
+        .gear-teeth {
+            position: absolute;
+            inset: 0;
+        }
+        .gear-tooth {
+            position: absolute;
+            width: 4px;
+            height: 6px;
+            background: #6a6a6a;
+            border-radius: 1px;
+            left: 50%;
+            top: 0;
+            transform-origin: 50% 12px;
+            transform: translateX(-50%);
+        }
+        .gear-tooth:nth-child(2) { transform: translateX(-50%) rotate(45deg); }
+        .gear-tooth:nth-child(3) { transform: translateX(-50%) rotate(90deg); }
+        .gear-tooth:nth-child(4) { transform: translateX(-50%) rotate(135deg); }
+        .gear-tooth:nth-child(5) { transform: translateX(-50%) rotate(180deg); }
+        .gear-tooth:nth-child(6) { transform: translateX(-50%) rotate(225deg); }
+        .gear-tooth:nth-child(7) { transform: translateX(-50%) rotate(270deg); }
+        .gear-tooth:nth-child(8) { transform: translateX(-50%) rotate(315deg); }
+
+        /* Fake gear: duller */
+        .gear-art.decoy .gear-body {
+            background: radial-gradient(circle, #5a5a5a 0%, #3a3a3a 80%);
+            border-color: #4a4a4a;
+        }
+        .gear-art.decoy .gear-tooth { background: #444; }
+        .gear-art.decoy { opacity: 0.6; filter: grayscale(0.5); }
+
+        /* --- CSS Gold Thread Spool --- */
+        .thread-spool-art {
+            position: relative;
+            width: 34px;
+            height: 38px;
+        }
+        .spool-core {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18px;
+            height: 22px;
+            background: linear-gradient(180deg, #d4a017 0%, #b8860b 40%, #8b6914 100%);
+            border-radius: 3px;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+        /* Thread wrapping lines */
+        .spool-core::before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(255,215,0,0.5) 0px,
+                rgba(255,215,0,0.5) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            border-radius: 2px;
+        }
+        .spool-core::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 6px;
+            height: 8px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+            border-radius: 2px;
+        }
+        .spool-cap-top, .spool-cap-bottom {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 26px;
+            height: 6px;
+            background: linear-gradient(180deg, #6b4f10, #3a2a0e);
+            border-radius: 3px;
+        }
+        .spool-cap-top { top: 4px; }
+        .spool-cap-bottom { bottom: 4px; }
+        /* Loose thread tail */
+        .spool-thread-tail {
+            position: absolute;
+            top: 10px;
+            right: 0px;
+            width: 12px;
+            height: 20px;
+            border: none;
+            border-right: 2px solid #ffd700;
+            border-bottom: 2px solid #ffd700;
+            border-radius: 0 0 10px 0;
+            opacity: 0.7;
+        }
+        .spool-thread-tail::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 4px;
+            height: 4px;
+            background: #ffd700;
+            border-radius: 50%;
+            box-shadow: 0 0 4px rgba(255, 215, 0, 0.6);
+        }
+        .spool-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, rgba(255,215,0,0.12), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* --- CSS Mirror --- */
+        .mirror-art {
+            position: relative;
+            width: 36px;
+            height: 52px;
+        }
+        .mirror-frame {
+            position: absolute;
+            inset: 0;
+            border: 3px solid #b8860b;
+            border-radius: 18px 18px 4px 4px;
+            background: linear-gradient(165deg, #4a6d8c 0%, #1a2a3a 40%, #0d1520 100%);
+            box-shadow:
+                inset 0 0 12px rgba(139, 211, 255, 0.15),
+                0 0 8px rgba(184, 134, 11, 0.3);
+            overflow: hidden;
+        }
+        .mirror-frame::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 12px;
+            height: 24px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.25), transparent);
+            border-radius: 8px 4px 12px 4px;
+        }
+        .mirror-frame::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, rgba(139,211,255,0.2), transparent);
+            border-radius: 50%;
+        }
+        .mirror-stand {
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 8px;
+            background: #8b6914;
+        }
+        .mirror-base {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 22px;
+            height: 4px;
+            background: linear-gradient(90deg, #6b4f10, #b8860b, #6b4f10);
+            border-radius: 2px;
+        }
+        .mirror-ornament {
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: #d4a017;
+            border-radius: 50%;
+            box-shadow: 0 0 6px rgba(212, 160, 23, 0.5);
+        }
+
+        /* --- CSS Cloak Rack --- */
+        .cloak-rack-art {
+            position: relative;
+            width: 40px;
+            height: 56px;
+        }
+        .rack-pole {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 42px;
+            background: linear-gradient(180deg, #5c4015, #3a2a0e);
+            border-radius: 2px;
+        }
+        .rack-base {
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 5px;
+            background: linear-gradient(90deg, #3a2a0e, #5c4015, #3a2a0e);
+            border-radius: 3px;
+        }
+        .rack-hook-l, .rack-hook-r {
+            position: absolute;
+            top: 6px;
+            width: 10px;
+            height: 3px;
+            background: #8b6914;
+            border-radius: 2px;
+        }
+        .rack-hook-l { left: 4px; transform: rotate(-15deg); }
+        .rack-hook-r { right: 4px; transform: rotate(15deg); }
+        .rack-hook-l::after, .rack-hook-r::after {
+            content: '';
+            position: absolute;
+            width: 3px;
+            height: 5px;
+            background: #8b6914;
+            border-radius: 0 0 3px 3px;
+        }
+        .rack-hook-l::after { right: 0; top: 2px; }
+        .rack-hook-r::after { left: 0; top: 2px; }
+        /* The cloak fabric draped on the rack */
+        .cloak-fabric {
+            position: absolute;
+            top: 8px;
+            left: 3px;
+            width: 34px;
+            height: 32px;
+            background: linear-gradient(180deg, #1a0a30 0%, #2d1650 40%, #1a0a30 100%);
+            border-radius: 6px 6px 12px 12px;
+            clip-path: polygon(15% 0%, 85% 0%, 100% 30%, 95% 100%, 50% 85%, 5% 100%, 0% 30%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+        .cloak-fabric::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.3), transparent);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 50%;
+        }
+        .cloak-fabric::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(139,92,246,0.25), transparent);
+        }
+        .cloak-shimmer {
+            position: absolute;
+            top: 12px;
+            left: 8px;
+            width: 6px;
+            height: 14px;
+            background: linear-gradient(180deg, rgba(139,92,246,0.15), transparent);
+            border-radius: 4px;
+            transform: rotate(-5deg);
+        }
     </style>
 </head>
 <body>
@@ -335,18 +830,72 @@
         <div class="door-text">SỢ HÃI = CHẾT</div>
     </div>
 
-    <div id="rack" class="entity item-obj" style="left: 100px; top: 200px;">🧥</div>
-    <div id="mirror" class="entity item-obj" style="left: 150px; top: 200px; transform: scaleX(-1);">🪞</div>
+    <div id="rack" class="entity" style="left: 100px; top: 200px;">
+        <div class="cloak-rack-art">
+            <div class="rack-hook-l"></div>
+            <div class="rack-hook-r"></div>
+            <div class="cloak-fabric">
+                <div class="cloak-shimmer"></div>
+            </div>
+            <div class="rack-pole"></div>
+            <div class="rack-base"></div>
+        </div>
+    </div>
+    <div id="mirror" class="entity" style="left: 170px; top: 200px;">
+        <div class="mirror-art">
+            <div class="mirror-ornament"></div>
+            <div class="mirror-frame"></div>
+            <div class="mirror-stand"></div>
+            <div class="mirror-base"></div>
+        </div>
+    </div>
     
-    <div id="clock-base" class="entity item-obj" style="left: 700px; top: 500px;">🕰️</div>
+    <div id="clock-base" class="entity" style="left: 700px; top: 500px;">
+        <div class="clock-art">
+            <div class="clock-top"></div>
+            <div class="clock-body">
+                <div class="clock-face">
+                    <div class="clock-hand-h"></div>
+                    <div class="clock-hand-m"></div>
+                    <div class="clock-center-dot"></div>
+                </div>
+                <div class="clock-pendulum"></div>
+            </div>
+            <div class="clock-foot-l"></div>
+            <div class="clock-foot-r"></div>
+        </div>
+    </div>
     <!-- Clock parts scattered -->
-    <div id="gear1" class="entity clock-parts" style="left: 650px; top: 520px;">⚙️</div>
-    <div id="gear2" class="entity clock-parts" style="left: 750px; top: 480px;">⚙️</div>
-    <div id="fake-gear" class="entity item-obj decoy" style="left: 720px; top: 540px;">⚙️</div>
+    <div id="gear1" class="entity" style="left: 650px; top: 520px;">
+        <div class="gear-art"><div class="gear-teeth"><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div></div><div class="gear-body"></div></div>
+    </div>
+    <div id="gear2" class="entity" style="left: 750px; top: 480px;">
+        <div class="gear-art"><div class="gear-teeth"><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div></div><div class="gear-body"></div></div>
+    </div>
+    <div id="fake-gear" class="entity" style="left: 720px; top: 540px;">
+        <div class="gear-art decoy"><div class="gear-teeth"><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div><div class="gear-tooth"></div></div><div class="gear-body"></div></div>
+    </div>
 
-    <div id="black-box" class="entity item-obj" style="left: 100px; top: 500px;">⬛</div>
+    <div id="black-box" class="entity" style="left: 100px; top: 500px;">
+        <div class="black-box-art">
+            <div class="box-shadow-aura"></div>
+            <div class="box-lid"></div>
+            <div class="box-body">
+                <div class="box-lock"></div>
+                <div class="box-question">?</div>
+            </div>
+        </div>
+    </div>
     
-    <div id="gold-thread" class="entity item-obj" style="left: 400px; top: 300px;">🧵</div>
+    <div id="gold-thread" class="entity" style="left: 400px; top: 300px;">
+        <div class="thread-spool-art">
+            <div class="spool-glow"></div>
+            <div class="spool-cap-top"></div>
+            <div class="spool-core"></div>
+            <div class="spool-cap-bottom"></div>
+            <div class="spool-thread-tail"></div>
+        </div>
+    </div>
     <div id="paradox-scroll" class="entity item-obj decoy" style="left: 560px; top: 430px;">📜</div>
     <div id="fear-talisman" class="entity item-obj decoy" style="left: 250px; top: 460px;">🪬</div>
     <div id="loop-door" class="loop-door"></div>
@@ -442,7 +991,7 @@
         objs: [
             { id: 'hegel', x: 600, y: 200, name: 'Hegel' },
             { id: 'rack', x: 100, y: 200, name: 'Giá Áo' },
-            { id: 'mirror', x: 150, y: 200, name: 'Gương Soi' },
+            { id: 'mirror', x: 170, y: 200, name: 'Gương Soi' },
             { id: 'clock-base', x: 700, y: 500, name: 'Cỗ Máy Thời Gian' },
             { id: 'gear1', x: 650, y: 520, name: 'Mảnh vỡ thời gian' },
             { id: 'gear2', x: 750, y: 480, name: 'Mảnh vỡ ký ức' },
@@ -664,9 +1213,12 @@
         else if (target.id === 'rack') {
             if (!STATE.flags.hasCloak) {
                 STATE.flags.hasCloak = true;
-                addToInv('cloak', 'Áo Choàng Vô Hình', '🧥', 'Phủ định sự hiện diện của bản thân.');
-                showFlash("Đã lấy: Áo Choàng (nhấn I để mặc trước gương).");
-                document.getElementById('rack').style.opacity = 0.5;
+                addToInv('cloak', 'Áo Choàng Vô Hình', '<span style="display:inline-block;width:16px;height:20px;background:linear-gradient(180deg,#1a0a30,#2d1650);border-radius:3px 3px 6px 6px;clip-path:polygon(20% 0%,80% 0%,100% 30%,90% 100%,50% 85%,10% 100%,0% 30%);"></span>', 'Phủ định sự hiện diện của bản thân.');
+                showFlash("Đã lấy: Áo Choàng.");
+                const fabric = document.querySelector('#rack .cloak-fabric');
+                if (fabric) fabric.style.display = 'none';
+                const shimmer = document.querySelector('#rack .cloak-shimmer');
+                if (shimmer) shimmer.style.display = 'none';
             } else {
                 showDialog("Giá Treo", "Trống rỗng.");
             }
@@ -701,7 +1253,7 @@
             if (STATE.flags.clockParts >= 2) showFlash("Đủ mảnh vỡ. Hãy sửa cỗ máy thời gian.");
         }
         else if (target.id === 'fake-gear') {
-            addToInv('fake_gear', 'Mảnh vỡ rỗng', '⚙️', 'Một bánh răng trơ trọi, không khớp vào cỗ máy.');
+            addToInv('fake_gear', 'Mảnh vỡ rỗng', '<span style="display:inline-block;width:14px;height:14px;background:radial-gradient(circle,#5a5a5a,#3a3a3a);border-radius:50%;border:1.5px solid #4a4a4a;"></span>', 'Một bánh răng trơ trọi, không khớp vào cỗ máy.');
             document.getElementById(target.id).style.display = 'none';
             STATE.objs = STATE.objs.filter(o => o.id !== target.id);
             showFlash("Nhặt được một mảnh vỡ lạ...");
@@ -767,7 +1319,7 @@
             STATE.uiState = 'NONE';
             invEl.style.display = 'none';
 
-            const distToMirror = dist(STATE.player.x, STATE.player.y, 150, 200);
+            const distToMirror = dist(STATE.player.x, STATE.player.y, 170, 200);
             if (distToMirror < 100) {
                 STATE.flags.cloakFoundTruth = true;
                 STATE.flags.mirrorTruthFound = true;
