@@ -454,8 +454,274 @@
         }
 
         .door-lock {
-            font-size: 24px;
-            color: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-art {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-lock {
+            width: 16px;
+            height: 14px;
+            border: 2px solid #f1d07a;
+            border-radius: 3px;
+            position: relative;
+            box-sizing: border-box;
+        }
+        .icon-lock::before {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 8px;
+            border: 2px solid #f1d07a;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            top: -8px;
+            left: 1px;
+        }
+
+        .icon-filter {
+            width: 18px;
+            height: 22px;
+            border: 2px solid #8bd3ff;
+            border-radius: 4px 4px 6px 6px;
+            position: relative;
+            box-sizing: border-box;
+        }
+        .icon-filter::before {
+            content: '';
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            height: 7px;
+            background: rgba(139, 211, 255, 0.35);
+        }
+        .icon-filter::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 4px;
+            width: 6px;
+            height: 6px;
+            border: 2px solid #8bd3ff;
+            border-bottom: none;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .icon-filter-fake {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #9aa3b2;
+            border-radius: 50%;
+            position: relative;
+            box-sizing: border-box;
+        }
+        .icon-filter-fake::after {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            border: 1px solid #9aa3b2;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        .icon-map {
+            width: 24px;
+            height: 16px;
+            border: 2px solid #d6b25e;
+            border-radius: 3px;
+            position: relative;
+            box-sizing: border-box;
+            background: rgba(214, 178, 94, 0.12);
+        }
+        .icon-map::after {
+            content: '';
+            position: absolute;
+            left: 3px;
+            right: 3px;
+            top: 4px;
+            height: 2px;
+            background: rgba(214, 178, 94, 0.7);
+            box-shadow: 0 4px 0 rgba(214, 178, 94, 0.5);
+        }
+
+        .icon-paper {
+            width: 18px;
+            height: 22px;
+            border: 2px solid #e9dcc0;
+            border-radius: 2px;
+            position: relative;
+            box-sizing: border-box;
+            background: #fdf5e6;
+        }
+        .icon-paper::after {
+            content: '';
+            position: absolute;
+            left: 3px;
+            right: 3px;
+            top: 5px;
+            height: 2px;
+            background: #c7b59a;
+            box-shadow: 0 4px 0 #c7b59a, 0 8px 0 #c7b59a;
+        }
+
+        .icon-paper-fake {
+            width: 18px;
+            height: 22px;
+            border: 2px dashed #c7b59a;
+            border-radius: 2px;
+            position: relative;
+            box-sizing: border-box;
+            background: rgba(253, 245, 230, 0.6);
+        }
+
+        .icon-tool {
+            width: 20px;
+            height: 20px;
+            position: relative;
+            transform: rotate(-20deg);
+        }
+        .icon-tool::before {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 16px;
+            background: #c0392b;
+            border: 2px solid #8e2c1b;
+            border-radius: 3px;
+            left: 7px;
+            top: 2px;
+        }
+        .icon-tool::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 12px;
+            background: #7f8c8d;
+            left: 8px;
+            top: -6px;
+        }
+
+        .inv-icon { display: flex; align-items: center; justify-content: center; }
+        .inv-icon-art { display: inline-block; }
+
+        /* --- Wooden Cabinet --- */
+        .wooden-cabinet {
+            width: 50px;
+            height: 65px;
+            background: linear-gradient(135deg, #5d4037, #3e2723);
+            border: 3px solid #2a1b18;
+            border-radius: 3px;
+            position: relative;
+            box-shadow: 4px 4px 12px rgba(0,0,0,0.5);
+            z-index: 5;
+        }
+        .cab-handle {
+            position: absolute;
+            width: 4px;
+            height: 10px;
+            background: #d6b25e;
+            border-radius: 2px;
+            top: 28px;
+            box-shadow: 0 0 4px rgba(214, 178, 94, 0.4);
+        }
+        .cab-handle-l { right: 16px; }
+        .cab-handle-r { right: 8px; }
+        .cab-leg {
+            position: absolute;
+            bottom: -7px;
+            width: 5px;
+            height: 7px;
+            background: #2a1b18;
+        }
+
+        /* --- Stone Chest --- */
+        .stone-chest {
+            width: 55px;
+            height: 45px;
+            background: linear-gradient(135deg, #607d8b, #455a64);
+            border: 3px solid #37474f;
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 4px 4px 12px rgba(0,0,0,0.5);
+            z-index: 5;
+        }
+        .chest-lid {
+            position: absolute;
+            top: -8px;
+            left: -3px;
+            width: 61px;
+            height: 12px;
+            background: linear-gradient(135deg, #78909c, #546e7a);
+            border: 3px solid #37474f;
+            border-radius: 4px 4px 0 0;
+        }
+        .chest-lock {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            border: 2px solid #d6b25e;
+            border-radius: 2px;
+        }
+
+        /* --- Cabinet/Chest Looting UI --- */
+        #cabinet-ui {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            display: none;
+            z-index: 1000;
+        }
+        #cabinet-ui h2 {
+            font-family: 'Unbounded', sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #f1d07a;
+            font-size: 18px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        #cabinet-items-list .cab-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            cursor: pointer;
+        }
+        #cabinet-items-list .cab-item.cab-selected {
+            background: rgba(214, 178, 94, 0.12);
+            border-left: 4px solid #d6b25e;
+        }
+        .cab-item-icon { width: 36px; display: flex; align-items: center; justify-content: center; margin-right: 10px; }
+        .cab-item-name { font-weight: bold; font-size: 14px; color: #e6edf5; }
+        #cabinet-item-desc {
+            font-size: 13px;
+            color: #9aa3b2;
+            font-style: italic;
+            min-height: 20px;
+            margin: 8px 0;
+        }
+        .cab-controls {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
 
         /* UI */
@@ -743,7 +1009,7 @@
         <div id="world">
             <!-- Door on Horizon -->
             <div id="exit-door" class="entity">
-                <div class="door-lock">🔒</div>
+                <div class="door-lock"><span class="icon-lock"></span></div>
             </div>
 
             <!-- Visual Sun (In the sky) -->
@@ -769,27 +1035,23 @@
             <!-- Mirror -->
             <div id="mirror" class="entity mirror-obj" style="left: 750px; top: 400px;"></div>
 
-            <!-- Paper -->
-            <div id="paper" class="entity paper-pile" style="left: 350px; top: 500px;">
-                <div class="scrap" style="transform: rotate(10deg); left: 0;"></div>
-                <div class="scrap" style="transform: rotate(-20deg); left: 10px;"></div>
-                <div class="scrap" style="transform: rotate(45deg); left: 5px; top: -5px;"></div>
-            </div>
-            <div id="fake-paper" class="entity paper-pile decoy" style="left: 520px; top: 520px;">
-                <div class="scrap" style="transform: rotate(-15deg); left: 0;"></div>
-                <div class="scrap" style="transform: rotate(20deg); left: 10px;"></div>
-            </div>
-
-            <!-- Screwdriver -->
-            <div id="screwdriver" class="entity screwdriver-obj" style="left: 150px; top: 450px;">
-                <div class="driver-handle"></div>
-                <div class="driver-shaft"></div>
+            <!-- Wooden Cabinet (left side) -->
+            <div id="cabinet" class="entity" style="left: 120px; top: 480px;">
+                <div class="wooden-cabinet">
+                    <div class="cab-handle cab-handle-l"></div>
+                    <div class="cab-handle cab-handle-r"></div>
+                    <div class="cab-leg" style="left: 5px;"></div>
+                    <div class="cab-leg" style="right: 5px;"></div>
+                </div>
             </div>
 
-            <!-- Decoy / extra items -->
-            <div id="sun-filter" class="entity decoy" style="left: 520px; top: 520px; font-size: 22px;">🧪</div>
-            <div id="fake-filter" class="entity decoy" style="left: 300px; top: 460px; font-size: 22px;">🧫</div>
-            <div id="star-map" class="entity decoy" style="left: 680px; top: 420px; font-size: 22px;">🗺️</div>
+            <!-- Stone Chest (right side) -->
+            <div id="chest" class="entity" style="left: 680px; top: 480px;">
+                <div class="stone-chest">
+                    <div class="chest-lid"></div>
+                    <div class="chest-lock"></div>
+                </div>
+            </div>
         </div>
 
         <!-- NPC Plato -->
@@ -841,6 +1103,18 @@
                 <h2 class="text-xl font-bold mb-4 text-yellow-500 text-center">HÀNH TRANG</h2>
                 <div id="inv-list" class="mb-4 max-h-40 overflow-y-auto border-t border-b border-gray-600"></div>
                 <div class="text-xs text-center text-gray-400">W/S: Chọn | F: Dùng | I: Đóng</div>
+            </div>
+
+            <!-- Cabinet / Chest Looting UI -->
+            <div id="cabinet-ui" class="ui-panel">
+                <h2 id="cabinet-title">TỦ GỖ</h2>
+                <div id="cabinet-items-list"></div>
+                <div id="cabinet-item-desc"></div>
+                <div class="cab-controls">
+                    <span>W/S: Chọn</span>
+                    <span>F: Lấy</span>
+                    <span>ESC: Đóng</span>
+                </div>
             </div>
 
             <!-- Puzzle: Paper 8 -->
@@ -896,22 +1170,34 @@
                 telescopeFiltered: false,
                 hasFilter: false,
                 hasFakeFilter: false,
-                hasStarMap: false
+                hasStarMap: false,
+                cabinetEmpty: false,
+                chestEmpty: false
             },
             telescope: { x: 650, y: 520 },
             interactables: [
                 { id: 'telescope', x: 650, y: 520, w: 40, h: 60, type: 'obj', name: 'Kính Thiên Văn' },
                 { id: 'compass', x: 600, y: 450, w: 40, h: 40, type: 'obj', name: 'La bàn lệch' },
                 { id: 'mirror', x: 750, y: 400, w: 10, h: 80, type: 'obj', name: 'Gương 2 chiều' },
-                { id: 'paper', x: 350, y: 500, w: 30, h: 20, type: 'pickup', name: 'Mảnh giấy vụn' },
-                { id: 'fake-paper', x: 520, y: 520, w: 30, h: 20, type: 'pickup', name: 'Mảnh giấy nhòe' },
-                { id: 'screwdriver', x: 150, y: 450, w: 30, h: 30, type: 'pickup', name: 'Tô vít' },
-                { id: 'sun-filter', x: 520, y: 520, w: 30, h: 30, type: 'pickup', name: 'Tấm lọc ánh sáng' },
-                { id: 'fake-filter', x: 300, y: 460, w: 30, h: 30, type: 'pickup', name: 'Tấm lọc mờ' },
-                { id: 'star-map', x: 680, y: 420, w: 30, h: 30, type: 'pickup', name: 'Bản đồ sao rách' },
-                { id: 'door', x: 400, y: 250, w: 120, h: 60, type: 'door', name: 'Cửa Thoát' }, // Đã chỉnh y cho khớp
+                { id: 'cabinet', x: 120, y: 480, w: 50, h: 65, type: 'container', name: 'Tủ gỗ' },
+                { id: 'chest', x: 680, y: 480, w: 55, h: 45, type: 'container', name: 'Rương đá' },
+                { id: 'door', x: 400, y: 250, w: 120, h: 60, type: 'door', name: 'Cửa Thoát' },
                 { id: 'plato', x: 200, y: 350, w: 40, h: 60, type: 'npc', name: 'Plato' }
             ],
+            /* Cabinet items: screwdriver (real), sun-filter (real), fake-paper (decoy) */
+            cabinetItems: [
+                { id: 'tool', name: 'Tô vít', icon: '<span class="inv-icon-art icon-tool"></span>', desc: 'Công cụ để mở hoặc phá vỡ.', flag: 'hasScrewdriver', flash: 'Lấy được: TÔ VÍT' },
+                { id: 'sun_filter', name: 'Tấm lọc ánh sáng', icon: '<span class="inv-icon-art icon-filter"></span>', desc: 'Giảm chói khi soi Mặt Trời.', flag: 'hasFilter', flash: 'Lấy được: TẤM LỌC ÁNH SÁNG' },
+                { id: 'fake_scraps', name: 'Mảnh giấy nhòe', icon: '<span class="inv-icon-art icon-paper-fake"></span>', desc: 'Chữ nhòe: "4301".', flag: 'hasFakePaper', flash: 'Lấy được: MẢNH GIẤY NHÒE' }
+            ],
+            /* Chest items: fake-filter (decoy), paper (real), star-map (decoy) */
+            chestItems: [
+                { id: 'fake_filter', name: 'Tấm lọc mờ', icon: '<span class="inv-icon-art icon-filter-fake"></span>', desc: 'Một mảnh kính đục, khó sử dụng.', flag: 'hasFakeFilter', flash: 'Lấy được: MẢNH KÍNH MỜ' },
+                { id: 'scraps', name: 'Mảnh giấy vụn', icon: '<span class="inv-icon-art icon-paper"></span>', desc: 'Những mảnh vụn rời rạc.', flag: 'hasPaper', flash: 'Lấy được: MẢNH GIẤY VỤN' },
+                { id: 'star_map', name: 'Bản đồ sao rách', icon: '<span class="inv-icon-art icon-map"></span>', desc: 'Có ký hiệu mờ: "Đi thẳng lên sẽ thấy đáp án".', flag: 'hasStarMap', flash: 'Lấy được: BẢN ĐỒ SAO RÁCH' }
+            ],
+            lootSource: null,   // 'cabinet' or 'chest'
+            lootIdx: 0,         // selected index in looting UI
             password: ""
         };
         // compatibility alias: earlier code expects STATE.items
@@ -1040,6 +1326,23 @@
                 return;
             }
 
+            if (STATE.gameState === 'LOOTING') {
+                const items = STATE.lootSource === 'cabinet' ? STATE.cabinetItems : STATE.chestItems;
+                if (code === 'Escape') { closeLootUI(); return; }
+                if (code === 'KeyW' || code === 'ArrowUp') {
+                    STATE.lootIdx = Math.max(0, STATE.lootIdx - 1);
+                    renderLootUI();
+                    return;
+                }
+                if (code === 'KeyS' || code === 'ArrowDown') {
+                    STATE.lootIdx = Math.min(items.length - 1, STATE.lootIdx + 1);
+                    renderLootUI();
+                    return;
+                }
+                if (code === 'KeyF') { takeLootItem(); return; }
+                return;
+            }
+
             if (code === 'KeyF') {
                 if (STATE.gameState === 'PLAYING') {
                     if (STATE.flags.telescopeCarried) {
@@ -1064,7 +1367,7 @@
 
             if (code === 'KeyI' && STATE.gameState !== 'DIALOG') {
                 if (STATE.gameState === 'PLAYING') openInventory();
-                else closeInventory();
+                else if (STATE.gameState === 'INVENTORY') closeInventory();
             }
 
             if (STATE.gameState === 'INVENTORY') {
@@ -1080,6 +1383,7 @@
 
             if (code === 'Escape') {
                 closeInventory();
+                closeLootUI();
                 document.getElementById('note-view').style.display = 'none';
                 document.getElementById('keypad-ui').style.display = 'none';
                 STATE.gameState = 'PLAYING';
@@ -1092,12 +1396,9 @@
             let npcTarget = null;
             let npcDist = CONFIG.interactDist;
             STATE.items.forEach(obj => {
-                if ((obj.id === 'paper' && STATE.flags.hasPaper) ||
-                    (obj.id === 'fake-paper' && STATE.flags.hasFakePaper) ||
-                    (obj.id === 'screwdriver' && STATE.flags.hasScrewdriver) ||
-                    (obj.id === 'sun-filter' && STATE.flags.hasFilter) ||
-                    (obj.id === 'fake-filter' && STATE.flags.hasFakeFilter) ||
-                    (obj.id === 'star-map' && STATE.flags.hasStarMap)) return;
+                // Skip empty containers
+                if (obj.id === 'cabinet' && STATE.flags.cabinetEmpty) return;
+                if (obj.id === 'chest' && STATE.flags.chestEmpty) return;
                 const d = dist(STATE.player.x, STATE.player.y, obj.x, obj.y);
                 if (obj.id === 'plato') {
                     if (d < npcDist) { npcDist = d; npcTarget = obj; }
@@ -1113,63 +1414,27 @@
             if (obj.id === 'plato') {
                 showDialog("Plato", dialogues[dialogIdx]);
             }
-            else if (obj.id === 'screwdriver') {
-                STATE.flags.hasScrewdriver = true;
-                addToInv('tool', 'Tô vít', '🔧', 'Công cụ để mở hoặc phá vỡ.');
-                document.getElementById('screwdriver').style.display = 'none';
-                showFlash("Nhặt được: TÔ VÍT");
+            else if (obj.id === 'cabinet') {
+                openLootUI('cabinet');
             }
-            else if (obj.id === 'paper') {
-                STATE.flags.hasPaper = true;
-                addToInv('scraps', 'Mảnh giấy vụn', '📄', 'Những mảnh vụn rời rạc.');
-                document.getElementById('paper').style.display = 'none';
-                showFlash("Nhặt được: MẢNH GIẤY VỤN");
+            else if (obj.id === 'chest') {
+                openLootUI('chest');
             }
-        else if (obj.id === 'fake-paper') {
-            STATE.flags.hasFakePaper = true;
-            addToInv('fake_scraps', 'Mảnh giấy nhòe', '🧾', 'Chữ nhòe: “4301”.');
-            document.getElementById('fake-paper').style.display = 'none';
-            showDialog("Mảnh giấy nhòe", "Dòng số mờ: “4301”. Nhưng nét chữ quá nhòe để tin tưởng.");
-        }
             else if (obj.id === 'telescope') {
-            if (STATE.flags.telescopeCarried) return;
-            if (isTelescopeAligned()) {
-                if (!STATE.flags.telescopeFiltered) {
-                    showDialog("Kính Thiên Văn", "Ánh sáng quá chói. Cần một tấm lọc để nhìn rõ.");
-                    return;
+                if (STATE.flags.telescopeCarried) return;
+                if (isTelescopeAligned()) {
+                    if (!STATE.flags.telescopeFiltered) {
+                        showDialog("Kính Thiên Văn", "Ánh sáng quá chói. Cần một tấm lọc để nhìn rõ.");
+                        return;
+                    }
+                    STATE.flags.telescopeAligned = true;
+                    revealSunNumber();
+                    showDialog("Kính Thiên Văn", "Bạn nhìn thấy Mặt Trời rực rỡ với con số '5' ở tâm.");
+                } else {
+                    STATE.flags.telescopeCarried = true;
+                    showFlash("Bạn nhấc ống nhòm. Hãy đặt ngay dưới mặt trời.");
                 }
-                STATE.flags.telescopeAligned = true;
-                revealSunNumber();
-                showDialog("Kính Thiên Văn", "Bạn nhìn thấy Mặt Trời rực rỡ với con số '5' ở tâm.");
-            } else {
-                STATE.flags.telescopeCarried = true;
-                showFlash("Bạn nhấc ống nhòm. Hãy đặt ngay dưới mặt trời.");
             }
-            }
-        else if (obj.id === 'sun-filter') {
-            STATE.flags.hasFilter = true;
-            addToInv('sun_filter', 'Tấm lọc ánh sáng', '🧪', 'Giảm chói khi soi Mặt Trời.');
-            document.getElementById('sun-filter').style.display = 'none';
-            STATE.items = STATE.items.filter(i => i.id !== 'sun-filter');
-            STATE.interactables = STATE.items;
-            showFlash("Nhặt được: TẤM LỌC ÁNH SÁNG");
-        }
-        else if (obj.id === 'fake-filter') {
-            STATE.flags.hasFakeFilter = true;
-            addToInv('fake_filter', 'Tấm lọc mờ', '🧫', 'Một mảnh kính đục, khó sử dụng.');
-            document.getElementById('fake-filter').style.display = 'none';
-            STATE.items = STATE.items.filter(i => i.id !== 'fake-filter');
-            STATE.interactables = STATE.items;
-            showFlash("Nhặt được: MẢNH KÍNH MỜ");
-        }
-        else if (obj.id === 'star-map') {
-            STATE.flags.hasStarMap = true;
-            addToInv('star_map', 'Bản đồ sao rách', '🗺️', 'Có ký hiệu mờ: “Đi thẳng lên sẽ thấy đáp án”.');
-            document.getElementById('star-map').style.display = 'none';
-            STATE.items = STATE.items.filter(i => i.id !== 'star-map');
-            STATE.interactables = STATE.items;
-            showDialog("Bản đồ sao", "Một chỉ dẫn mơ hồ: “Cứ tiến thẳng lên”.");
-        }
             else if (obj.id === 'compass') {
                 if (STATE.flags.compassOpened) showDialog("La Bàn", "Bên trong lõi là con số '4'.");
                 else showDialog("La Bàn", "Kim chỉ sai hướng. Có vẻ nắp đậy bị kẹt.");
@@ -1184,6 +1449,72 @@
                 document.getElementById('keypad-display').textContent = "_ _ _ _";
                 STATE.password = "";
             }
+        }
+
+        /* ---- Cabinet/Chest Looting System ---- */
+        function openLootUI(source) {
+            const items = source === 'cabinet' ? STATE.cabinetItems : STATE.chestItems;
+            if (items.length === 0) {
+                showFlash(source === 'cabinet' ? 'Tủ gỗ đã trống.' : 'Rương đá đã trống.');
+                return;
+            }
+            STATE.gameState = 'LOOTING';
+            STATE.lootSource = source;
+            STATE.lootIdx = 0;
+            const ui = document.getElementById('cabinet-ui');
+            document.getElementById('cabinet-title').textContent = source === 'cabinet' ? 'TỦ GỖ' : 'RƯƠNG ĐÁ';
+            ui.style.display = 'block';
+            renderLootUI();
+        }
+
+        function closeLootUI() {
+            document.getElementById('cabinet-ui').style.display = 'none';
+            if (STATE.gameState === 'LOOTING') STATE.gameState = 'PLAYING';
+            STATE.lootSource = null;
+        }
+
+        function renderLootUI() {
+            const items = STATE.lootSource === 'cabinet' ? STATE.cabinetItems : STATE.chestItems;
+            const list = document.getElementById('cabinet-items-list');
+            const descEl = document.getElementById('cabinet-item-desc');
+            list.innerHTML = '';
+            items.forEach((item, idx) => {
+                const row = document.createElement('div');
+                row.className = 'cab-item' + (idx === STATE.lootIdx ? ' cab-selected' : '');
+                row.innerHTML = `<div class="cab-item-icon">${item.icon}</div><div class="cab-item-name">${item.name}</div>`;
+                list.appendChild(row);
+            });
+            if (items[STATE.lootIdx]) {
+                descEl.textContent = items[STATE.lootIdx].desc;
+            } else {
+                descEl.textContent = '';
+            }
+        }
+
+        function takeLootItem() {
+            const items = STATE.lootSource === 'cabinet' ? STATE.cabinetItems : STATE.chestItems;
+            if (items.length === 0) return;
+            const item = items[STATE.lootIdx];
+            if (!item) return;
+
+            // Add to inventory
+            addToInv(item.id, item.name, item.icon, item.desc);
+            // Set flag
+            if (item.flag) STATE.flags[item.flag] = true;
+            showFlash(item.flash);
+
+            // Remove from container
+            items.splice(STATE.lootIdx, 1);
+            if (STATE.lootIdx >= items.length) STATE.lootIdx = Math.max(0, items.length - 1);
+
+            // Check if container is now empty
+            if (items.length === 0) {
+                if (STATE.lootSource === 'cabinet') STATE.flags.cabinetEmpty = true;
+                else STATE.flags.chestEmpty = true;
+                closeLootUI();
+                return;
+            }
+            renderLootUI();
         }
 
         function useItem() {
@@ -1373,7 +1704,8 @@
             let t = null;
             let min = CONFIG.interactDist;
             STATE.items.forEach(i => {
-                if ((i.id === 'paper' && STATE.flags.hasPaper) || (i.id === 'screwdriver' && STATE.flags.hasScrewdriver)) return;
+                if (i.id === 'cabinet' && STATE.flags.cabinetEmpty) return;
+                if (i.id === 'chest' && STATE.flags.chestEmpty) return;
                 const d = dist(STATE.player.x, STATE.player.y, i.x, i.y);
                 if (d < min) { min = d; t = i; }
             });
